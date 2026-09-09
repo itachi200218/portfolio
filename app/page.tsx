@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";// import { useState } from "react";
 import LiquidGlass from "@/components/LiquidGlass";
 
@@ -34,6 +34,65 @@ function getExperience(startDate: string) {
 
   return `${years} yr ${months} mo`;
 }
+function ScrollReveal({
+  children,
+  className = "",
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.unobserve(element);
+        }
+      },
+      {
+        threshold: 0.12,
+        rootMargin: "0px 0px -60px 0px",
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`
+        transition-[transform,opacity,filter]
+        duration-[900ms]
+        motion-reduce:transition-none
+        motion-reduce:translate-y-0
+        motion-reduce:opacity-100
+        motion-reduce:blur-0
+        ease-[cubic-bezier(0.16,1,0.3,1)]
+        ${
+          visible
+            ? "translate-y-0 opacity-100 blur-0"
+            : "translate-y-14 opacity-0 blur-[6px]"
+        }
+        ${className}
+      `}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function Home() {
 
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -309,13 +368,17 @@ const scrollToTop = () => {
 
       {/* Featured Work */}
       <section id="work" className="mx-auto max-w-7xl px-6 py-32">
-        <SectionHeading number="01" title="Featured Engineering" />
+        <ScrollReveal>
+          <SectionHeading number="01" title="Featured Engineering" />
+        </ScrollReveal>
 
-        <p className="mt-6 max-w-2xl text-zinc-500">
-          Selected systems and platforms spanning AI, backend engineering,
-          real-time applications, enterprise automation, and distributed
-          systems.
-        </p>
+        <ScrollReveal delay={100}>
+          <p className="mt-6 max-w-2xl text-zinc-500">
+            Selected systems and platforms spanning AI, backend engineering,
+            real-time applications, enterprise automation, and distributed
+            systems.
+          </p>
+        </ScrollReveal>
 
        {/* Personal */}
 
@@ -330,58 +393,74 @@ const scrollToTop = () => {
 
   <div className="grid gap-6 md:grid-cols-2">
 
-    <Link
-      href="/projects/jarvis"
-      className="group block h-full"
-    >
-      <Project
-        number="01"
-        title="J.A.R.V.I.S"
-        eyebrow="Flagship AI Platform"
-        description="Full-stack AI platform combining natural-language commands, persistent memory, real-time collaboration, workspaces, chat, audio/video communication, and centralized administration."
-        tags={[
-          "AI",
-          "Spring Boot",
-          "Java",
-          "MongoDB",
-          "WebSockets",
-          "WebRTC",
-        ]}
-        large
-        featured
-      />
-    </Link>
+    <ScrollReveal>
+      <Link
+        href="/projects/jarvis"
+        className="group block h-full"
+      >
+        <Project
+          number="01"
+          title="J.A.R.V.I.S"
+          eyebrow="Flagship AI Platform"
+          description="Full-stack AI platform combining natural-language commands, persistent memory, real-time collaboration, workspaces, chat, audio/video communication, and centralized administration."
+          tags={[
+            "AI",
+            "Spring Boot",
+            "Java",
+            "MongoDB",
+            "WebSockets",
+            "WebRTC",
+          ]}
+          large
+          featured
+        />
+      </Link>
+    </ScrollReveal>
 
-    <Project
-      number="02"
-      title="AllureIQ"
-      eyebrow="AI Test Intelligence"
-      description="AI-powered unified test intelligence platform combining automated API testing, intelligent failure analysis, root-cause insights, recommendations, persistent reports, and reusable framework capabilities."
-      tags={[
-        "Java",
-        "Spring Boot",
-        "REST Assured",
-        "TestNG",
-        "MongoDB",
-        "AI",
-      ]}
-      large
-    />
+    <ScrollReveal delay={120}>
+      <Link
+        href="/projects/allureiq"
+        className="group block h-full"
+      >
+        <Project
+          number="02"
+          title="AllureIQ"
+          eyebrow="AI Test Intelligence"
+          description="AI-powered unified test intelligence platform combining automated API testing, intelligent failure analysis, root-cause insights, recommendations, persistent reports, and reusable framework capabilities."
+          tags={[
+            "Java",
+            "Spring Boot",
+            "REST Assured",
+            "TestNG",
+            "MongoDB",
+            "AI",
+          ]}
+          large
+        />
+      </Link>
+    </ScrollReveal>
 
-    <Project
-      number="03"
-      title="Food Finder"
-      eyebrow="AI + Backend Platform"
-      description="AI-enhanced recipe discovery platform using fuzzy search, Redis caching, MySQL persistence, secure authentication, and intelligent AI fallback for fast recipe discovery."
-      tags={[
-        "Python",
-        "Flask",
-        "Spring Boot",
-        "Redis",
-        "MySQL",
-        "Gemini",
-      ]}
-    />
+    <ScrollReveal delay={240}>
+      <Link
+        href="/projects/food-finder"
+        className="group block h-full"
+      >
+        <Project
+          number="03"
+          title="Food Finder"
+          eyebrow="AI + Backend Platform"
+          description="AI-enhanced recipe discovery platform using fuzzy search, Redis caching, MySQL persistence, secure authentication, and intelligent AI fallback for fast recipe discovery."
+          tags={[
+            "Python",
+            "Flask",
+            "Spring Boot",
+            "Redis",
+            "MySQL",
+            "Gemini",
+          ]}
+        />
+      </Link>
+    </ScrollReveal>
 
   </div>
 </div>
@@ -395,38 +474,72 @@ const scrollToTop = () => {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <Project
-              number="04"
-              title="SFCC Promotion Validation Platform"
-              eyebrow="Enterprise Engineering"
-              description="Reusable enterprise validation framework and platform for complex promotion scenarios, business-rule execution, automated validation, and reporting across commerce workflows."
-              tags={[
-                "Java",
-                "Spring Boot",
-                "SFCC",
-                "Cucumber",
-                "REST Assured",
+            <ScrollReveal>
+              <Link
+                href="/projects/sfcc-promotion"
+                className="group block h-full"
+              >
+                <Project
+                  number="04"
+                  title="SFCC Promotion Validation Platform"
+                  eyebrow="Enterprise Engineering"
+                  description="Reusable enterprise validation framework and platform for complex promotion scenarios, business-rule execution, automated validation, and reporting across commerce workflows."
+                  tags={[
+                    "Java",
+                    "Spring Boot",
+                    "SFCC",
+                    "Cucumber",
+                    "REST Assured",
+                  ]}
+                  large
+                  featured
+                />
+              </Link>
+            </ScrollReveal>
 
-              ]}
-              large
-              featured
-            />
+            <ScrollReveal delay={120}>
+              <Link
+                href="/projects/loggerai"
+                className="group block h-full"
+              >
+                <Project
+                  number="05"
+                  title="LoggerAI"
+                  eyebrow="AI-Powered Framework Diagnostics"
+                  description="Java and Spring Boot diagnostic platform that parses framework logs and report data, uses AI to identify likely root causes, explain failures, and generate actionable solutions."
+                  tags={[
+                    "Java",
+                    "Spring Boot",
+                    "AI",
+                    "Log Parsing",
+                    "Root Cause",
+                    "Diagnostics",
+                  ]}
+                />
+              </Link>
+            </ScrollReveal>
 
-            <Project
-              number="05"
-              title="LoggerAI"
-              eyebrow="AI Diagnostics"
-              description="AI-assisted log analysis and diagnostic system designed to accelerate troubleshooting, failure investigation, and root-cause analysis."
-              tags={["AI", "Backend", "Java", "Diagnostics", "Log Analysis"]}
-            />
-
-            <Project
-              number="06"
-              title="KM Portal"
-              eyebrow="Enterprise Platform"
-              description="Internal knowledge and learning platform supporting structured learning workflows, scoring, user tracking, and duplicate-prevention mechanisms."
-              tags={["Java", "Spring Boot", "Platform", "Automation"]}
-            />
+            <ScrollReveal delay={240}>
+              <Link
+                href="/projects/km-portal"
+                className="group block h-full"
+              >
+                <Project
+                  number="06"
+                  title="KM Portal"
+                  eyebrow="Knowledge & Learning Platform"
+                  description="Internal knowledge and learning platform supporting structured learning workflows, measurable scoring, user activity tracking, and duplicate-prevention mechanisms."
+                  tags={[
+                    "Java",
+                    "Spring Boot",
+                    "Knowledge Management",
+                    "Learning",
+                    "Scoring",
+                    "User Tracking",
+                  ]}
+                />
+              </Link>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -435,40 +548,42 @@ const scrollToTop = () => {
       <section className="border-y border-zinc-900 bg-[#0c0c0c]">
         <div className="mx-auto max-w-7xl px-6 py-32">
           <div className="grid gap-16 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-            <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-zinc-600">
-                Flagship Project
-              </p>
+            <ScrollReveal>
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-zinc-600">
+                  Flagship Project
+                </p>
 
-              <h2 className="mt-5 text-5xl font-semibold tracking-tight md:text-6xl">
-                J.A.R.V.I.S
-              </h2>
+                <h2 className="mt-5 text-5xl font-semibold tracking-tight md:text-6xl">
+                  J.A.R.V.I.S
+                </h2>
 
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-400">
-                An AI-powered personal and collaborative platform designed
-                around intelligent commands, persistent context, real-time
-                communication, workspace collaboration, and centralized
-                platform governance.
-              </p>
+                <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-400">
+                  An AI-powered personal and collaborative platform designed
+                  around intelligent commands, persistent context, real-time
+                  communication, workspace collaboration, and centralized
+                  platform governance.
+                </p>
 
-              <div className="mt-10 flex flex-wrap gap-3">
-                <TechBadge>AI</TechBadge>
-                <TechBadge>React</TechBadge>
-                <TechBadge>FastAPI</TechBadge>
-                <TechBadge>MongoDB</TechBadge>
-                <TechBadge>WebSockets</TechBadge>
-                <TechBadge>WebRTC</TechBadge>
-                <TechBadge>Docker</TechBadge>
+                <div className="mt-10 flex flex-wrap gap-3">
+                  <TechBadge>AI</TechBadge>
+                  <TechBadge>React</TechBadge>
+                  <TechBadge>FastAPI</TechBadge>
+                  <TechBadge>MongoDB</TechBadge>
+                  <TechBadge>WebSockets</TechBadge>
+                  <TechBadge>WebRTC</TechBadge>
+                  <TechBadge>Docker</TechBadge>
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <FeatureCard title="AI Engine" text="Natural-language commands and coding assistance." />
-              <FeatureCard title="Persistent Memory" text="Context-aware interactions and stored user information." />
-              <FeatureCard title="Real-Time" text="WebSocket-based collaboration and communication." />
-              <FeatureCard title="Communication" text="Group audio and video communication through WebRTC." />
-              <FeatureCard title="Workspaces" text="Collaborative spaces with members and real-time activity." />
-              <FeatureCard title="Governance" text="Admin and Super Admin control over users and commands." />
+              <ScrollReveal><FeatureCard title="AI Engine" text="Natural-language commands and coding assistance." /></ScrollReveal>
+              <ScrollReveal delay={80}><FeatureCard title="Persistent Memory" text="Context-aware interactions and stored user information." /></ScrollReveal>
+              <ScrollReveal delay={160}><FeatureCard title="Real-Time" text="WebSocket-based collaboration and communication." /></ScrollReveal>
+              <ScrollReveal delay={240}><FeatureCard title="Communication" text="Group audio and video communication through WebRTC." /></ScrollReveal>
+              <ScrollReveal delay={320}><FeatureCard title="Workspaces" text="Collaborative spaces with members and real-time activity." /></ScrollReveal>
+              <ScrollReveal delay={400}><FeatureCard title="Governance" text="Admin and Super Admin control over users and commands." /></ScrollReveal>
             </div>
           </div>
         </div>
@@ -476,36 +591,15 @@ const scrollToTop = () => {
 
       {/* Engineering Approach */}
       <section className="mx-auto max-w-7xl px-6 py-32">
-        <SectionHeading number="02" title="Engineering Approach" />
+        <ScrollReveal>
+          <SectionHeading number="02" title="Engineering Approach" />
+        </ScrollReveal>
 
         <div className="mt-16 grid gap-px overflow-hidden rounded-3xl border border-zinc-900 bg-zinc-900 md:grid-cols-2">
-          <EngineeringBlock
-            number="01"
-            title="Backend Systems"
-            description="Designing APIs, services, business logic, persistence layers, caching strategies, and reusable backend components."
-            technologies="Java · Spring Boot · Python · FastAPI · Flask"
-          />
-
-          <EngineeringBlock
-            number="02"
-            title="Platform Engineering"
-            description="Building reusable frameworks and platforms that abstract complex workflows into configurable and maintainable systems."
-            technologies="Automation · Frameworks · Business Rules · CI/CD"
-          />
-
-          <EngineeringBlock
-            number="03"
-            title="AI Integration"
-            description="Using AI where it provides practical engineering value, including intelligent commands, diagnostics, summaries, search fallback, and developer tooling."
-            technologies="LLM · Gemini · AI Diagnostics · AI Test Intelligence"
-          />
-
-          <EngineeringBlock
-            number="04"
-            title="Real-Time Systems"
-            description="Building applications around live communication, synchronization, presence, notifications, and collaborative workflows."
-            technologies="WebSockets · WebRTC · Real-Time Messaging"
-          />
+          <ScrollReveal><EngineeringBlock number="01" title="Backend Systems" description="Designing APIs, services, business logic, persistence layers, caching strategies, and reusable backend components." technologies="Java · Spring Boot · Python · FastAPI · Flask" /></ScrollReveal>
+          <ScrollReveal delay={100}><EngineeringBlock number="02" title="Platform Engineering" description="Building reusable frameworks and platforms that abstract complex workflows into configurable and maintainable systems." technologies="Automation · Frameworks · Business Rules · CI/CD" /></ScrollReveal>
+          <ScrollReveal delay={200}><EngineeringBlock number="03" title="AI Integration" description="Using AI where it provides practical engineering value, including intelligent commands, diagnostics, summaries, search fallback, and developer tooling." technologies="LLM · Gemini · AI Diagnostics · AI Test Intelligence" /></ScrollReveal>
+          <ScrollReveal delay={300}><EngineeringBlock number="04" title="Real-Time Systems" description="Building applications around live communication, synchronization, presence, notifications, and collaborative workflows." technologies="WebSockets · WebRTC · Real-Time Messaging" /></ScrollReveal>
         </div>
       </section>
 
@@ -569,139 +663,122 @@ const scrollToTop = () => {
 
   {/* Certifications */}
 <section id="certifications" className="mx-auto max-w-7xl px-6 py-32">
-  <SectionHeading number="04" title="Certifications" />
+  <ScrollReveal>
+    <SectionHeading number="04" title="Certifications" />
+  </ScrollReveal>
 
   <div className="mt-16 grid gap-6 md:grid-cols-2">
-    <CertificationCard
-      issuer="Oracle"
-      title="Oracle Cloud Infrastructure"
-      subtitle="Certified Architect Associate"
-      score="90%"
-      date="September 2026"
-      featured
-      image="/certifications/oracle.jpg"
-    />
-
-    <CertificationCard
-      issuer="Professional Development"
-      title="Software Development & Cloud"
-      subtitle="Microsoft Certification"
-      score=""
-      date=""
-      image="/certifications/SE1.jpg"
-    />
-
-    <CertificationCard
-      issuer="Docker"
-      title="Docker Certification"
-      subtitle="Containerization & Development"
-      score=""
-      date=""
-      image="/certifications/docker.jpg"
-    />
-
-    <CertificationCard
-      issuer="HackerRank"
-      title="Java · Python · MySQL · REST API"
-      subtitle="Technical Certifications"
-      score=""
-      date=""
-      images={[
-        "/certifications/java.jpg",
-        "/certifications/PY.jpg",
-        "/certifications/SQL.jpg",
-        "/certifications/RESTAPI.jpg",
-        "/certifications/SE.jpg",
-        "/certifications/DSA.jpg"
-      ]}
-    />
+    <ScrollReveal><CertificationCard issuer="Oracle" title="Oracle Cloud Infrastructure" subtitle="Certified Architect Associate" score="90%" date="September 2026" featured image="/certifications/oracle.jpg" /></ScrollReveal>
+    <ScrollReveal delay={120}><CertificationCard issuer="Professional Development" title="Software Development & Cloud" subtitle="Microsoft Certification" score="" date="" image="/certifications/SE1.jpg" /></ScrollReveal>
+    <ScrollReveal delay={240}><CertificationCard issuer="Docker" title="Docker Certification" subtitle="Containerization & Development" score="" date="" image="/certifications/docker.jpg" /></ScrollReveal>
+    <ScrollReveal delay={360}><CertificationCard issuer="HackerRank" title="Java · Python · MySQL · REST API" subtitle="Technical Certifications" score="" date="" images={["/certifications/java.jpg","/certifications/PY.jpg","/certifications/SQL.jpg","/certifications/RESTAPI.jpg","/certifications/SE.jpg","/certifications/DSA.jpg"]} /></ScrollReveal>
   </div>
 </section>
 
       {/* Recognition */}
-      <section className="border-y border-zinc-900 bg-[#0c0c0c]">
+      <section id="recognition" className="border-y border-zinc-900 bg-[#0c0c0c]">
         <div className="mx-auto max-w-7xl px-6 py-32">
-          <SectionHeading number="05" title="Recognition" />
+          <ScrollReveal>
+            <SectionHeading number="05" title="Recognition" />
+          </ScrollReveal>
 
           <div className="mt-16 grid gap-6 md:grid-cols-2">
-            <RecognitionCard
-              title="Trend Setter"
-              organization="Cognizant"
-              description="Recognition for the SFCC Promotion Validation Tool and its impact on reducing validation effort."
-            />
+            <ScrollReveal>
+              <RecognitionFlipCard
+                title="Trend Setter"
+                organization="Cognizant"
+                description="Recognition for the SFCC Promotion Validation Tool and its impact on reducing validation effort."
+                image="/certifications/certificate.jpg"
+              />
+            </ScrollReveal>
 
-            <RecognitionCard
-              title="The Energy and Optimism"
-              organization="Cognizant"
-              description="Recognition for valuable contribution and outstanding performance."
-            />
+            <ScrollReveal delay={150}>
+              <RecognitionFlipCard
+                title="The Energy and Optimism"
+                organization="Cognizant"
+                description="Recognition for valuable contribution and outstanding performance."
+                image="/certifications/Trendsetter.jpg"
+              />
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* About */}
       <section id="about" className="mx-auto max-w-7xl px-6 py-32">
-        <SectionHeading number="06" title="About" />
+        <ScrollReveal>
+          <SectionHeading number="06" title="About" />
+        </ScrollReveal>
 
         <div className="mt-12 grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-          <p className="max-w-3xl text-xl leading-9 text-zinc-400">
-            I enjoy building software that combines strong engineering
-            foundations with practical AI, automation, cloud infrastructure,
-            and scalable application design. My work spans personal products,
-            backend systems, reusable frameworks, enterprise platforms, and
-            real-time applications.
-          </p>
+          <ScrollReveal>
+            <p className="max-w-3xl text-xl leading-9 text-zinc-400">
+              I enjoy building software that combines strong engineering
+              foundations with practical AI, automation, cloud infrastructure,
+              and scalable application design. My work spans personal products,
+              backend systems, reusable frameworks, enterprise platforms, and
+              real-time applications.
+            </p>
+          </ScrollReveal>
 
-          <div className="grid grid-cols-2 gap-x-8 gap-y-8 text-sm">
-            <SkillGroup title="Languages" items="Java · Python · SQL · JavaScript" />
-            <SkillGroup title="Backend" items="Spring Boot · FastAPI · Flask · Node.js" />
-            <SkillGroup title="Frontend" items="React · Next.js · PWA · Responsive UI" />
-            <SkillGroup title="Data" items="MongoDB · MySQL · Redis" />
-            <SkillGroup title="Cloud" items="Azure · Docker · CI/CD" />
-            <SkillGroup title="Engineering" items="REST · WebSockets · WebRTC · Automation" />
-          </div>
+          <ScrollReveal delay={150}>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-8 text-sm">
+              <SkillGroup title="Languages" items="Java · Python · SQL · JavaScript" />
+              <SkillGroup title="Backend" items="Spring Boot · FastAPI · Flask · Node.js" />
+              <SkillGroup title="Frontend" items="React · Next.js · PWA · Responsive UI" />
+              <SkillGroup title="Data" items="MongoDB · MySQL · Redis" />
+              <SkillGroup title="Cloud" items="Azure · Docker · CI/CD" />
+              <SkillGroup title="Engineering" items="REST · WebSockets · WebRTC · Automation" />
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* Contact */}
       <section id="contact" className="border-t border-zinc-900">
         <div className="mx-auto max-w-7xl px-6 py-32">
-          <p className="text-xs uppercase tracking-[0.3em] text-zinc-600">
-            Let's connect
-          </p>
+          <ScrollReveal>
+            <p className="text-xs uppercase tracking-[0.3em] text-zinc-600">
+              Let's connect
+            </p>
+          </ScrollReveal>
 
-          <h2 className="mt-6 max-w-4xl text-5xl font-semibold leading-tight tracking-tight md:text-7xl">
-            Building something interesting?
-            <br />
-            <span className="text-zinc-500">Let's talk.</span>
-          </h2>
+          <ScrollReveal delay={100}>
+            <h2 className="mt-6 max-w-4xl text-5xl font-semibold leading-tight tracking-tight md:text-7xl">
+              Building something interesting?
+              <br />
+              <span className="text-zinc-500">Let's talk.</span>
+            </h2>
+          </ScrollReveal>
 
-          <div className="mt-10 flex flex-wrap gap-4">
-            <a
-              href="mailto:chetanyaadepu@gmail.com"
-              className="rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-zinc-200"
-            >
-              Email me
-            </a>
+          <ScrollReveal delay={200}>
+            <div className="mt-10 flex flex-wrap gap-4">
+              <a
+                href="mailto:chetanyaadepu@gmail.com"
+                className="rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-zinc-200"
+              >
+                Email me
+              </a>
 
-            <a
-              href="https://github.com/itachi200218"
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full border border-zinc-800 px-6 py-3 text-sm font-medium text-white transition hover:border-zinc-600"
-            >
-              GitHub
-            </a>
+              <a
+                href="https://github.com/itachi200218"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-zinc-800 px-6 py-3 text-sm font-medium text-white transition hover:border-zinc-600"
+              >
+                GitHub
+              </a>
 
-           <a
-  href="https://www.linkedin.com/in/adepu-chaitanya-b63b36237"
-  target="_blank"
-  rel="noreferrer"
-  className="rounded-full border border-zinc-800 px-6 py-3 text-sm font-medium text-white transition hover:border-zinc-600"
->
-  LinkedIn
-</a>
-          </div>
+              <a
+                href="https://www.linkedin.com/in/adepu-chaitanya-b63b36237"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-zinc-800 px-6 py-3 text-sm font-medium text-white transition hover:border-zinc-600"
+              >
+                LinkedIn
+              </a>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -934,7 +1011,8 @@ function CertificationCard({
   images?: string[];
 }) {
   const [showCertificate, setShowCertificate] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+const [selectedImage, setSelectedImage] = useState<string | null>(null);
+const [flipped, setFlipped] = useState(false);
 
   const certificateImages =
     images?.length
@@ -950,10 +1028,11 @@ function CertificationCard({
     setShowCertificate(true);
   };
 
-  const closeCertificate = () => {
-    setShowCertificate(false);
-    setSelectedImage(null);
-  };
+const closeCertificate = () => {
+  setShowCertificate(false);
+  setSelectedImage(null);
+  setFlipped(false);
+};
 
   return (
     <>
@@ -961,12 +1040,25 @@ function CertificationCard({
       <div className="group">
         {/* SINGLE CERTIFICATE */}
         {!isMultiple && certificateImages[0] && (
-          <div
-            className="group/card h-[300px] cursor-pointer [perspective:1200px]"
-            onClick={() => openCertificate(certificateImages[0])}
-          >
-            <div className="relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover/card:[transform:rotateY(180deg)]">
+       <div
+  className="group/card h-[300px] cursor-pointer [perspective:1200px]"
+ onClick={() => {
+  setFlipped(true);
 
+  setTimeout(() => {
+    openCertificate(certificateImages[0]);
+  }, 250);
+}}
+>
+<div
+  className={`
+    relative h-full w-full
+    transition-transform duration-700
+    [transform-style:preserve-3d]
+    ${flipped ? "[transform:rotateY(180deg)]" : ""}
+    md:group-hover/card:[transform:rotateY(180deg)]
+  `}
+>
               {/* FRONT */}
               <div className="absolute inset-0 [backface-visibility:hidden]">
                 <LiquidGlass
@@ -1179,6 +1271,102 @@ function CertificateMiniCard({
     </div>
   );
 }
+function RecognitionFlipCard({
+  title,
+  organization,
+  description,
+  image,
+}: {
+  title: string;
+  organization: string;
+  description: string;
+  image: string;
+}) {
+  const [flipped, setFlipped] = useState(false);
+
+  return (
+    <div
+      className="group/recognition h-[300px] cursor-pointer [perspective:1200px]"
+      onClick={() => setFlipped(true)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          setFlipped(true);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${title} recognition`}
+    >
+      <div
+        className={`relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] ${
+          flipped ? "[transform:rotateY(180deg)]" : ""
+        } md:group-hover/recognition:[transform:rotateY(180deg)]`}
+      >
+        {/* FRONT */}
+        <div className="absolute inset-0 [backface-visibility:hidden]">
+          <LiquidGlass className="h-full p-8">
+            <div className="flex h-full flex-col justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.25em] text-zinc-600">
+                  {organization}
+                </p>
+
+                <h3 className="mt-5 text-3xl font-semibold tracking-tight">
+                  {title}
+                </h3>
+
+                <p className="mt-4 max-w-xl leading-7 text-zinc-500">
+                  {description}
+                </p>
+              </div>
+
+              <p className="text-xs text-zinc-600">
+                Hover to view recognition →
+              </p>
+            </div>
+          </LiquidGlass>
+        </div>
+
+        {/* BACK */}
+        <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]">
+          <LiquidGlass className="h-full p-4">
+            <div className="flex h-full flex-col">
+              <div className="relative flex-1 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
+                <img
+                  src={image}
+                  alt={`${title} recognition certificate`}
+                  className="h-full w-full object-contain"
+                />
+              </div>
+
+              <p className="pt-3 text-center text-xs text-zinc-400">
+                Click to enlarge
+              </p>
+            </div>
+          </LiquidGlass>
+        </div>
+      </div>
+
+      {/* Enlarged image */}
+      {flipped && (
+        <div
+          className="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 p-6 backdrop-blur-md group-focus-within/recognition:flex"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="relative max-h-[90vh] max-w-[95vw]">
+            <img
+              src={image}
+              alt={`${title} recognition certificate enlarged`}
+              className="max-h-[90vh] max-w-[95vw] rounded-xl object-contain shadow-[0_25px_100px_rgba(0,0,0,0.7)]"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function RecognitionCard({
   title,
   organization,

@@ -3,47 +3,34 @@
 import { useEffect, useRef, useState } from "react";
 
 const USER_IMAGES = [
-  "/projects/jarvis/img.png",
-  "/projects/jarvis/img1.png",
-  "/projects/jarvis/img2.png",
-  "/projects/jarvis/img3.png",
-  "/projects/jarvis/img4.png",
-  "/projects/jarvis/img5.png",
-  "/projects/jarvis/img6.5.jpg",
-  "/projects/jarvis/img6.jpg",
-  "/projects/jarvis/img7.png",
-  "/projects/jarvis/img8.png",
-  "/projects/jarvis/img9.png",
-  "/projects/jarvis/img10.png",
-  "/projects/jarvis/img11.png",
-  "/projects/jarvis/img12.png",
-  "/projects/jarvis/img13.png",
+  "/projects/food-finder/1.jpg",
+  "/projects/food-finder/2.jpg",
+  "/projects/food-finder/3.jpg",
+  "/projects/food-finder/4.jpg",
 ];
 
 const ADMIN_IMAGES = [
-  "/projects/jarvis/img7.png",
-  "/projects/jarvis/img8.png",
-  "/projects/jarvis/img9.png",
-  "/projects/jarvis/img10.png",
-  "/projects/jarvis/img11.png",
-  "/projects/jarvis/img12.png",
+  "/projects/food-finder/ad1.jpg",
+  "/projects/food-finder/ad2.jpg",
+  "/projects/food-finder/ad3.jpg",
+  "/projects/food-finder/ad4.jpg",
+  "/projects/food-finder/ad5.jpg",
+  "/projects/food-finder/ad6.jpg",
 ];
 
 type GalleryType = "user" | "admin" | null;
 
-export default function JarvisUIExplorer() {
+export default function FoodFinderUIExplorer() {
   const [chooserOpen, setChooserOpen] = useState(false);
   const [gallery, setGallery] = useState<GalleryType>(null);
   const [current, setCurrent] = useState(0);
 
-  // Floating button
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const draggingButton = useRef(false);
   const movedButton = useRef(false);
   const buttonStartPointer = useRef({ x: 0, y: 0 });
   const buttonStartPosition = useRef({ x: 0, y: 0 });
 
-  // Tinder deck
   const [dragX, setDragX] = useState(0);
   const [draggingCard, setDraggingCard] = useState(false);
   const [animatingCard, setAnimatingCard] = useState(false);
@@ -67,8 +54,6 @@ export default function JarvisUIExplorer() {
     return () => window.removeEventListener("resize", placeButton);
   }, []);
 
-  // ---------------- FLOATING BUTTON ----------------
-
   const handleButtonPointerDown = (
     e: React.PointerEvent<HTMLButtonElement>,
   ) => {
@@ -81,7 +66,6 @@ export default function JarvisUIExplorer() {
     };
 
     buttonStartPosition.current = { ...position };
-
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
@@ -125,8 +109,6 @@ export default function JarvisUIExplorer() {
     }
   };
 
-  // ---------------- OPEN / CLOSE ----------------
-
   const openGallery = (type: GalleryType) => {
     setGallery(type);
     setCurrent(0);
@@ -144,57 +126,44 @@ export default function JarvisUIExplorer() {
     setAnimatingCard(false);
   };
 
-  // ---------------- NORMAL NAVIGATION ----------------
-
   const nextImage = () => {
     if (animatingCard || images.length < 2) return;
-
     setDragX(0);
     setCurrent((prev) => (prev + 1) % images.length);
   };
 
   const previousImage = () => {
     if (animatingCard || images.length < 2) return;
-
     setDragX(0);
     setCurrent((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  // ---------------- TINDER SWIPE ----------------
+  const completeSwipe = (direction: "next" | "previous") => {
+    if (animatingCard || !gallery || images.length < 2) return;
 
-const completeSwipe = (direction: "next" | "previous") => {
-  if (animatingCard || !gallery || images.length < 2) return;
+    setAnimatingCard(true);
 
-  setAnimatingCard(true);
+    const width = window.innerWidth;
+    const incomingX = direction === "next" ? width : -width;
 
-  const width = window.innerWidth;
+    setDragX(incomingX);
 
-  // Swipe right → next image comes from the right
-  // Swipe left  → previous image comes from the left
-  const incomingX =
-    direction === "next"
-      ? width
-      : -width;
-
-  // First move the incoming card outside the screen
-  setDragX(incomingX);
-
-  window.requestAnimationFrame(() => {
     window.requestAnimationFrame(() => {
-      setCurrent((prev) =>
-        direction === "next"
-          ? (prev + 1) % images.length
-          : (prev - 1 + images.length) % images.length
-      );
+      window.requestAnimationFrame(() => {
+        setCurrent((prev) =>
+          direction === "next"
+            ? (prev + 1) % images.length
+            : (prev - 1 + images.length) % images.length,
+        );
 
-      setDragX(0);
+        setDragX(0);
 
-      window.setTimeout(() => {
-        setAnimatingCard(false);
-      }, 300);
+        window.setTimeout(() => {
+          setAnimatingCard(false);
+        }, 300);
+      });
     });
-  });
-};
+  };
 
   const handleCardPointerDown = (
     e: React.PointerEvent<HTMLDivElement>,
@@ -203,7 +172,6 @@ const completeSwipe = (direction: "next" | "previous") => {
 
     cardStartX.current = e.clientX;
     setDraggingCard(true);
-
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
@@ -211,7 +179,6 @@ const completeSwipe = (direction: "next" | "previous") => {
     e: React.PointerEvent<HTMLDivElement>,
   ) => {
     if (!draggingCard || animatingCard) return;
-
     setDragX(e.clientX - cardStartX.current);
   };
 
@@ -249,8 +216,6 @@ const completeSwipe = (direction: "next" | "previous") => {
     setDragX(0);
   };
 
-  // ---------------- KEYBOARD ----------------
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!gallery) return;
@@ -277,18 +242,14 @@ const completeSwipe = (direction: "next" | "previous") => {
   if (gallery) {
     const next1 = (current + 1) % images.length;
     const next2 = (current + 2) % images.length;
-
-    // The amount the back cards move toward the front as the user drags.
     const progress = Math.min(Math.abs(dragX) / 260, 1);
 
     return (
       <>
-        {/* FULLSCREEN TINDER DECK */}
         <div className="fixed inset-0 z-[10001] bg-black/95 backdrop-blur-2xl">
-          {/* HEADER */}
           <div className="absolute left-5 top-5 z-[100] sm:left-8 sm:top-8">
             <p className="text-xs uppercase tracking-[0.25em] text-zinc-500">
-              J.A.R.V.I.S
+              FOOD FINDER
             </p>
             <h2 className="mt-1 text-lg font-medium text-white">
               {gallery === "user" ? "User App" : "Admin App"}
@@ -309,13 +270,11 @@ const completeSwipe = (direction: "next" | "previous") => {
             </button>
           </div>
 
-          {/* DECK */}
-          <div className="absolute inset-0 flex items-center justify-center px-3 pb-16 pt-20 sm:px-8 sm:pb-20 sm:pt-24">
-            <div className="relative h-[72vh] w-[92vw] max-w-6xl sm:h-[76vh]">
-              {/* CARD 3 */}
+          <div className="absolute inset-0 flex items-center justify-center px-2 pb-16 pt-20 sm:px-5 sm:pb-20 sm:pt-24">
+            <div className="relative h-[78vh] w-[96vw] max-w-[1400px] sm:h-[82vh]">
               {images.length >= 3 && (
                 <div
-                  className="absolute inset-0 overflow-hidden rounded-[28px] border border-white/20 bg-zinc-900 shadow-[0_30px_100px_rgba(0,0,0,0.7)]"
+                  className="absolute inset-0 overflow-hidden rounded-[28px] border border-white/20 bg-zinc-950/95 shadow-[0_30px_100px_rgba(0,0,0,0.7)]"
                   style={{
                     zIndex: 10,
                     transform: `translateY(${
@@ -329,17 +288,17 @@ const completeSwipe = (direction: "next" | "previous") => {
                 >
                   <img
                     src={images[next2]}
-                    alt={`Screenshot ${next2 + 1}`}
-                    className="h-full w-full object-contain p-3 sm:p-6"
+                    alt={`Food Finder ${gallery} screenshot ${next2 + 1}`}
+                    className="h-full w-full object-contain"
+                    style={{ width: "100%", height: "100%", objectFit: "contain", transform: "scale(2.15)", transformOrigin: "center" }}
                     draggable={false}
                   />
                 </div>
               )}
 
-              {/* CARD 2 */}
               {images.length >= 2 && (
                 <div
-                  className="absolute inset-0 overflow-hidden rounded-[28px] border border-white/20 bg-zinc-900 shadow-[0_30px_100px_rgba(0,0,0,0.7)]"
+                  className="absolute inset-0 overflow-hidden rounded-[28px] border border-white/20 bg-zinc-950/95 shadow-[0_30px_100px_rgba(0,0,0,0.7)]"
                   style={{
                     zIndex: 20,
                     transform: `translateY(${
@@ -353,14 +312,14 @@ const completeSwipe = (direction: "next" | "previous") => {
                 >
                   <img
                     src={images[next1]}
-                    alt={`Screenshot ${next1 + 1}`}
-                    className="h-full w-full object-contain p-3 sm:p-6"
+                    alt={`Food Finder ${gallery} screenshot ${next1 + 1}`}
+                    className="h-full w-full object-contain"
+                    style={{ width: "100%", height: "100%", objectFit: "contain", transform: "scale(2.15)", transformOrigin: "center" }}
                     draggable={false}
                   />
                 </div>
               )}
 
-              {/* CARD 1 — ACTIVE */}
               <div
                 className="absolute inset-0 z-30 overflow-hidden rounded-[28px] border border-white/25 bg-black shadow-[0_35px_120px_rgba(0,0,0,0.85)] touch-none select-none will-change-transform"
                 onPointerDown={handleCardPointerDown}
@@ -376,7 +335,6 @@ const completeSwipe = (direction: "next" | "previous") => {
                     : "transform 300ms cubic-bezier(.22,.8,.2,1)",
                 }}
               >
-                {/* SWIPE LABEL */}
                 <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-between p-6 sm:p-10">
                   <div
                     className="rounded-full border border-white/20 bg-black/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-xl"
@@ -400,17 +358,17 @@ const completeSwipe = (direction: "next" | "previous") => {
                 <img
                   key={images[current]}
                   src={images[current]}
-                  alt={`J.A.R.V.I.S ${
+                  alt={`Food Finder ${
                     gallery === "user" ? "User" : "Admin"
                   } screenshot ${current + 1}`}
-                  className="h-full w-full object-contain p-3 sm:p-6 pointer-events-none"
+                  className="h-full w-full object-contain pointer-events-none"
+                  style={{ width: "100%", height: "100%", objectFit: "contain", transform: "scale(2.15)", transformOrigin: "center" }}
                   draggable={false}
                 />
               </div>
             </div>
           </div>
 
-          {/* DESKTOP CONTROLS */}
           <div className="absolute bottom-7 left-1/2 z-[100] hidden -translate-x-1/2 items-center gap-3 sm:flex">
             <button
               onClick={() => completeSwipe("previous")}
@@ -433,12 +391,10 @@ const completeSwipe = (direction: "next" | "previous") => {
             </button>
           </div>
 
-          {/* MOBILE HINT */}
           <p className="absolute bottom-5 left-1/2 z-[100] -translate-x-1/2 text-[10px] uppercase tracking-[0.2em] text-zinc-600 sm:hidden">
             Swipe to explore
           </p>
 
-          {/* DOTS */}
           <div className="absolute bottom-5 left-1/2 z-[100] hidden max-w-[70vw] -translate-x-1/2 gap-1.5 overflow-hidden rounded-full border border-white/10 bg-black/50 px-3 py-2 backdrop-blur-xl sm:flex">
             {images.map((_, index) => (
               <button
@@ -465,10 +421,9 @@ const completeSwipe = (direction: "next" | "previous") => {
 
   return (
     <>
-      {/* FLOATING EXPLORER BUTTON */}
       {!chooserOpen && (
         <button
-          aria-label="Explore J.A.R.V.I.S interface"
+          aria-label="Explore Food Finder interface"
           onPointerDown={handleButtonPointerDown}
           onPointerMove={handleButtonPointerMove}
           onPointerUp={handleButtonPointerUp}
@@ -495,7 +450,6 @@ const completeSwipe = (direction: "next" | "previous") => {
         </button>
       )}
 
-      {/* USER / ADMIN CHOOSER */}
       {chooserOpen && (
         <div
           className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/65 p-5 backdrop-blur-xl"
@@ -508,7 +462,7 @@ const completeSwipe = (direction: "next" | "previous") => {
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.25em] text-zinc-500">
-                  J.A.R.V.I.S
+                  FOOD FINDER
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-white">
                   Explore the UI
@@ -536,8 +490,8 @@ const completeSwipe = (direction: "next" | "previous") => {
                   User App
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-zinc-500">
-                  Explore the J.A.R.V.I.S user platform, workspace,
-                  AI, chat and communication UI.
+                  Explore recipe discovery, intelligent search, categories,
+                  chatbot and the Gemini-powered user experience.
                 </p>
                 <div className="mt-6 text-sm text-zinc-400 transition group-hover:text-white">
                   View screenshots →
@@ -555,8 +509,8 @@ const completeSwipe = (direction: "next" | "previous") => {
                   Admin App
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-zinc-500">
-                  Explore user management, command center, support,
-                  security and administration UI.
+                  Explore analytics, recipe management, user administration,
+                  AI commands and platform intelligence.
                 </p>
                 <div className="mt-6 text-sm text-zinc-400 transition group-hover:text-white">
                   View screenshots →

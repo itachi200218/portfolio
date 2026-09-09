@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import JarvisUIExplorer from "./JarvisUIExplorer";
 
 const technologies = [
@@ -69,7 +70,7 @@ const architecturePoints = [
 
 export default function JarvisCaseStudy() {
   return (
-    <main className="min-h-screen bg-[#02030a] text-white">
+    <main className="min-h-screen scroll-smooth overflow-x-clip bg-[#02030a] text-white selection:bg-cyan-400/20 selection:text-cyan-100">
         <JarvisUIExplorer />
       {/* Background atmosphere */}
       <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
@@ -79,7 +80,7 @@ export default function JarvisCaseStudy() {
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-white/[0.08] bg-black/40 backdrop-blur-2xl">
+      <nav className="sticky top-0 z-50 border-b border-white/[0.08] bg-black/35 backdrop-blur-2xl backdrop-saturate-[180%]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
           <Link
             href="/"
@@ -100,7 +101,8 @@ export default function JarvisCaseStudy() {
       </nav>
 
       {/* Hero */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 pb-24 pt-24 lg:px-10 lg:pt-32">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 pb-24 pt-24 lg:px-10 lg:pt-32">
         <div className="max-w-4xl">
           <div className="mb-6 flex items-center gap-3">
             <span className="rounded-full border border-cyan-400/20 bg-cyan-400/[0.08] px-3 py-1 text-xs font-medium tracking-wider text-cyan-300">
@@ -163,9 +165,11 @@ export default function JarvisCaseStudy() {
           ))}
         </div>
       </section>
+</ScrollReveal>
 
       {/* What is JARVIS */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <SectionHeading
           number="01"
           title="What is J.A.R.V.I.S?"
@@ -210,9 +214,11 @@ export default function JarvisCaseStudy() {
           </GlassCard>
         </div>
       </section>
+</ScrollReveal>
 
       {/* User Architecture */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <SectionHeading
           number="02"
           title="User Platform Architecture"
@@ -240,9 +246,11 @@ export default function JarvisCaseStudy() {
           ))}
         </div>
       </section>
+</ScrollReveal>
 
       {/* Admin Architecture */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <SectionHeading
           number="03"
           title="Admin Platform Architecture"
@@ -270,9 +278,11 @@ export default function JarvisCaseStudy() {
           ))}
         </div>
       </section>
+</ScrollReveal>
 
       {/* Capabilities */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <SectionHeading
           number="04"
           title="Platform Capabilities"
@@ -295,9 +305,11 @@ export default function JarvisCaseStudy() {
           ))}
         </div>
       </section>
+</ScrollReveal>
 
       {/* AI command pipeline */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <SectionHeading
           number="05"
           title="AI Command Pipeline"
@@ -332,9 +344,11 @@ export default function JarvisCaseStudy() {
           </div>
         </GlassCard>
       </section>
+</ScrollReveal>
 
       {/* Memory */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <SectionHeading
           number="06"
           title="Persistent Memory"
@@ -354,9 +368,11 @@ export default function JarvisCaseStudy() {
           ))}
         </div>
       </section>
+</ScrollReveal>
 
       {/* Real time */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <SectionHeading
           number="07"
           title="Real-Time Architecture"
@@ -401,9 +417,11 @@ export default function JarvisCaseStudy() {
           </GlassCard>
         </div>
       </section>
+</ScrollReveal>
 
       {/* Collaboration */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <SectionHeading
           number="08"
           title="Workspaces & Collaboration"
@@ -443,9 +461,11 @@ export default function JarvisCaseStudy() {
           </div>
         </GlassCard>
       </section>
+</ScrollReveal>
 
       {/* Security */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <SectionHeading
           number="09"
           title="Security & Role-Based Access"
@@ -495,9 +515,11 @@ export default function JarvisCaseStudy() {
           </div>
         </div>
       </section>
+</ScrollReveal>
 
       {/* Technology */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <SectionHeading
           number="10"
           title="Technology Architecture"
@@ -524,9 +546,11 @@ export default function JarvisCaseStudy() {
           ))}
         </div>
       </section>
+</ScrollReveal>
 
       {/* Engineering decisions */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
         <SectionHeading
           number="11"
           title="Engineering Decisions"
@@ -561,9 +585,11 @@ export default function JarvisCaseStudy() {
           ))}
         </div>
       </section>
+</ScrollReveal>
 
       {/* Closing */}
-      <section className="relative z-10 mx-auto max-w-7xl px-6 pb-32 pt-24 lg:px-10">
+      <ScrollReveal>
+<section className="relative z-10 mx-auto max-w-7xl px-6 pb-32 pt-24 lg:px-10">
         <div className="rounded-[2rem] border border-cyan-400/[0.12] bg-cyan-400/[0.025] p-8 text-center backdrop-blur-2xl md:p-16">
           <span className="text-xs uppercase tracking-[0.3em] text-cyan-400">
             Built from scratch
@@ -607,7 +633,57 @@ export default function JarvisCaseStudy() {
 </div>
         </div>
       </section>
+</ScrollReveal>
     </main>
+  );
+}
+
+function ScrollReveal({
+  children,
+  className = "",
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.unobserve(element);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -70px 0px",
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-[transform,opacity,filter] duration-[950ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:blur-0 ${
+        visible
+          ? "translate-y-0 opacity-100 blur-0"
+          : "translate-y-16 opacity-0 blur-[6px]"
+      } ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -643,11 +719,60 @@ function GlassCard({
   children: React.ReactNode;
   className?: string;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const element = ref.current;
+    if (!element) return;
+
+    const rect = element.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    element.style.setProperty("--mouse-x", `${x}px`);
+    element.style.setProperty("--mouse-y", `${y}px`);
+    element.style.setProperty(
+      "--rotate-x",
+      `${((y / rect.height) - 0.5) * -2.5}deg`
+    );
+    element.style.setProperty(
+      "--rotate-y",
+      `${((x / rect.width) - 0.5) * 2.5}deg`
+    );
+  };
+
+  const handleMouseLeave = () => {
+    const element = ref.current;
+    if (!element) return;
+
+    element.style.setProperty("--rotate-x", "0deg");
+    element.style.setProperty("--rotate-y", "0deg");
+  };
+
   return (
     <div
-      className={`rounded-3xl border border-white/[0.08] bg-white/[0.035] p-6 backdrop-blur-2xl transition duration-300 hover:border-white/[0.13] hover:bg-white/[0.05] ${className}`}
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={`group/glass relative overflow-hidden rounded-3xl border border-white/[0.10] bg-white/[0.035] p-6 backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_20px_80px_rgba(0,0,0,0.18)] transition-[transform,border-color,background,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-white/[0.18] hover:bg-white/[0.055] hover:shadow-[0_30px_100px_rgba(0,0,0,0.28)] md:[transform:perspective(1000px)_rotateX(var(--rotate-x))_rotateY(var(--rotate-y))] ${className}`}
+      style={{
+        ["--mouse-x" as string]: "50%",
+        ["--mouse-y" as string]: "50%",
+        ["--rotate-x" as string]: "0deg",
+        ["--rotate-y" as string]: "0deg",
+      }}
     >
-      {children}
+      <div className="pointer-events-none absolute inset-0 rounded-3xl bg-[radial-gradient(420px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.11),transparent_58%)] opacity-0 transition-opacity duration-500 group-hover/glass:opacity-100" />
+
+      <div className="pointer-events-none absolute -left-20 -top-20 h-40 w-40 rounded-full bg-cyan-400/[0.07] blur-3xl transition-transform duration-700 group-hover/glass:translate-x-8 group-hover/glass:translate-y-6" />
+
+      <div className="pointer-events-none absolute -bottom-24 -right-24 h-48 w-48 rounded-full bg-purple-400/[0.06] blur-3xl transition-transform duration-700 group-hover/glass:-translate-x-8 group-hover/glass:-translate-y-6" />
+
+      <div className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 transition-transform duration-1000 group-hover/glass:translate-x-[320%] group-hover/glass:opacity-100" />
+
+      <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/[0.04]" />
+
+      <div className="relative z-10">{children}</div>
     </div>
   );
 }
@@ -660,14 +785,17 @@ function ArchitectureImage({
   alt: string;
 }) {
   return (
-    <div className="group overflow-hidden rounded-[2rem] border border-white/[0.1] bg-black/40 p-2 shadow-[0_30px_100px_rgba(0,0,0,0.45)]">
-      <div className="overflow-hidden rounded-[1.5rem]">
+    <div className="group relative overflow-hidden rounded-[2rem] border border-white/[0.10] bg-white/[0.025] p-2 shadow-[0_30px_100px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(34,211,238,0.08),transparent_35%),radial-gradient(circle_at_90%_100%,rgba(168,85,247,0.08),transparent_35%)] opacity-70" />
+      <div className="pointer-events-none absolute inset-0 rounded-[2rem] ring-1 ring-inset ring-white/[0.05]" />
+
+      <div className="relative overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-black/40">
         <Image
           src={src}
           alt={alt}
           width={1536}
           height={1024}
-          className="h-auto w-full transition duration-700 group-hover:scale-[1.01]"
+          className="h-auto w-full transition duration-700 ease-out group-hover:scale-[1.012]"
           priority
         />
       </div>
