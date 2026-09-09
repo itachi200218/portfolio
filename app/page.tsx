@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-// import { useState } from "react";
+import Link from "next/link";// import { useState } from "react";
 import LiquidGlass from "@/components/LiquidGlass";
 
 function getExperience(startDate: string) {
@@ -59,9 +59,7 @@ const scrollToTop = () => {
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-white selection:text-black">
       {/* Navigation */}
-<nav className="fixed left-1/2 top-4 z-50 w-[calc(100%-2rem)] max-w-5xl -translate-x-1/2">
-  {/* MAIN GLASS NAVBAR */}
-  <LiquidGlass className="rounded-full px-5 py-3 md:px-6">
+<nav className="fixed left-1/2 top-4 z-50 w-[calc(100%-2rem)] max-w-5xl xl:max-w-7xl -translate-x-1/2">  <LiquidGlass className="rounded-full px-5 py-3 md:px-6">
     <div className="flex items-center justify-between">
 
       {/* LOGO */}
@@ -245,7 +243,8 @@ const scrollToTop = () => {
 </nav>
 
       {/* Hero */}
-<section className="mx-auto flex min-h-[78vh] max-w-7xl items-center px-6 pt-24 md:pt-0">        <div className="max-w-5xl">
+<section className="mx-auto flex min-h-[78vh] max-w-7xl items-center px-6 pt-24 md:pt-0 xl:pt-24">
+      <div className="max-w-5xl">
           <div className="mb-7 flex items-center gap-3">
             <span className="h-2 w-2 rounded-full bg-white" />
             <p className="text-sm font-medium uppercase tracking-[0.3em] text-zinc-500">
@@ -318,66 +317,74 @@ const scrollToTop = () => {
           systems.
         </p>
 
-        {/* Personal */}
-        <div className="mt-16">
-          <div className="mb-6 flex items-center gap-3">
-            <span className="text-xs uppercase tracking-[0.25em] text-zinc-600">
-              Personal Engineering
-            </span>
-            <div className="h-px flex-1 bg-zinc-900" />
-          </div>
+       {/* Personal */}
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <Project
-              number="01"
-              title="J.A.R.V.I.S"
-              eyebrow="Flagship AI Platform"
-              description="Full-stack AI platform combining natural-language commands, persistent memory, real-time collaboration, workspaces, chat, audio/video communication, and centralized administration."
-              tags={[
-                "AI",
-                "Spring Boot",
-                "Java",
-                "MongoDB",
-                "WebSockets",
-                "WebRTC",
-              ]}
-              large
-              featured
-            />
+<div className="mt-16">
+  <div className="mb-6 flex items-center gap-3">
+    <span className="text-xs uppercase tracking-[0.25em] text-zinc-600">
+      Personal Engineering
+    </span>
 
-            <Project
-              number="02"
-              title="AllureIQ"
-              eyebrow="AI Test Intelligence"
-              description="AI-powered unified test intelligence platform combining automated API testing, intelligent failure analysis, root-cause insights, recommendations, persistent reports, and reusable framework capabilities."
-              tags={[
-                "Java",
-                "Spring Boot",
-                "REST Assured",
-                "TestNG",
-                "MongoDB",
-                "AI",
-              ]}
-              large
-            />
+    <div className="h-px flex-1 bg-zinc-900" />
+  </div>
 
-            <Project
-              number="03"
-              title="Food Finder"
-              eyebrow="AI + Backend Platform"
-              description="AI-enhanced recipe discovery platform using fuzzy search, Redis caching, MySQL persistence, secure authentication, and intelligent AI fallback for fast recipe discovery."
-              tags={[
-                "Python",
-                "Flask",
-                "Spring Boot",
-                "Redis",
-                "MySQL",
-                "Gemini",
-              ]}
-            />
-          </div>
-        </div>
+  <div className="grid gap-6 md:grid-cols-2">
 
+    <Link
+      href="/projects/jarvis"
+      className="group block h-full"
+    >
+      <Project
+        number="01"
+        title="J.A.R.V.I.S"
+        eyebrow="Flagship AI Platform"
+        description="Full-stack AI platform combining natural-language commands, persistent memory, real-time collaboration, workspaces, chat, audio/video communication, and centralized administration."
+        tags={[
+          "AI",
+          "Spring Boot",
+          "Java",
+          "MongoDB",
+          "WebSockets",
+          "WebRTC",
+        ]}
+        large
+        featured
+      />
+    </Link>
+
+    <Project
+      number="02"
+      title="AllureIQ"
+      eyebrow="AI Test Intelligence"
+      description="AI-powered unified test intelligence platform combining automated API testing, intelligent failure analysis, root-cause insights, recommendations, persistent reports, and reusable framework capabilities."
+      tags={[
+        "Java",
+        "Spring Boot",
+        "REST Assured",
+        "TestNG",
+        "MongoDB",
+        "AI",
+      ]}
+      large
+    />
+
+    <Project
+      number="03"
+      title="Food Finder"
+      eyebrow="AI + Backend Platform"
+      description="AI-enhanced recipe discovery platform using fuzzy search, Redis caching, MySQL persistence, secure authentication, and intelligent AI fallback for fast recipe discovery."
+      tags={[
+        "Python",
+        "Flask",
+        "Spring Boot",
+        "Redis",
+        "MySQL",
+        "Gemini",
+      ]}
+    />
+
+  </div>
+</div>
         {/* Professional */}
         <div className="mt-24">
           <div className="mb-6 flex items-center gap-3">
