@@ -1283,78 +1283,123 @@ function RecognitionFlipCard({
   image: string;
 }) {
   const [flipped, setFlipped] = useState(false);
+  const [showRecognition, setShowRecognition] = useState(false);
+
+  const openRecognition = () => {
+    setShowRecognition(true);
+  };
+
+  const closeRecognition = () => {
+    setShowRecognition(false);
+    setFlipped(false);
+  };
+
+  useEffect(() => {
+    if (!showRecognition) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeRecognition();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showRecognition]);
 
   return (
-    <div
-      className="group/recognition h-[300px] cursor-pointer [perspective:1200px]"
-      onClick={() => setFlipped(true)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          setFlipped(true);
-        }
-      }}
-      role="button"
-      tabIndex={0}
-      aria-label={`View ${title} recognition`}
-    >
+    <>
       <div
-        className={`relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] ${
-          flipped ? "[transform:rotateY(180deg)]" : ""
-        } md:group-hover/recognition:[transform:rotateY(180deg)]`}
+        className="group/recognition h-[300px] cursor-pointer [perspective:1200px]"
+        onClick={() => setFlipped((value) => !value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            setFlipped((value) => !value);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label={`View ${title} recognition`}
       >
-        {/* FRONT */}
-        <div className="absolute inset-0 [backface-visibility:hidden]">
-          <LiquidGlass className="h-full p-8">
-            <div className="flex h-full flex-col justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.25em] text-zinc-600">
-                  {organization}
-                </p>
+        <div
+          className={`relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] ${
+            flipped ? "[transform:rotateY(180deg)]" : ""
+          } md:group-hover/recognition:[transform:rotateY(180deg)]`}
+        >
+          {/* FRONT */}
+          <div className="absolute inset-0 [backface-visibility:hidden]">
+            <LiquidGlass className="h-full p-8">
+              <div className="flex h-full flex-col justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.25em] text-zinc-600">
+                    {organization}
+                  </p>
 
-                <h3 className="mt-5 text-3xl font-semibold tracking-tight">
-                  {title}
-                </h3>
+                  <h3 className="mt-5 text-3xl font-semibold tracking-tight">
+                    {title}
+                  </h3>
 
-                <p className="mt-4 max-w-xl leading-7 text-zinc-500">
-                  {description}
+                  <p className="mt-4 max-w-xl leading-7 text-zinc-500">
+                    {description}
+                  </p>
+                </div>
+
+                <p className="text-xs text-zinc-600">
+                  Hover to view recognition →
                 </p>
               </div>
+            </LiquidGlass>
+          </div>
 
-              <p className="text-xs text-zinc-600">
-                Hover to view recognition →
-              </p>
-            </div>
-          </LiquidGlass>
-        </div>
+          {/* BACK */}
+          <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]">
+            <LiquidGlass className="h-full p-4">
+              <div className="flex h-full flex-col">
+                <button
+                  type="button"
+                  className="relative flex-1 cursor-zoom-in overflow-hidden rounded-2xl border border-white/10 bg-black/20 text-left"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    openRecognition();
+                  }}
+                  aria-label={`Enlarge ${title} recognition`}
+                >
+                  <img
+                    src={image}
+                    alt={`${title} recognition certificate`}
+                    className="h-full w-full object-contain"
+                  />
+                </button>
 
-        {/* BACK */}
-        <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]">
-          <LiquidGlass className="h-full p-4">
-            <div className="flex h-full flex-col">
-              <div className="relative flex-1 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
-                <img
-                  src={image}
-                  alt={`${title} recognition certificate`}
-                  className="h-full w-full object-contain"
-                />
+                <p className="pt-3 text-center text-xs text-zinc-400">
+                  Click to enlarge
+                </p>
               </div>
-
-              <p className="pt-3 text-center text-xs text-zinc-400">
-                Click to enlarge
-              </p>
-            </div>
-          </LiquidGlass>
+            </LiquidGlass>
+          </div>
         </div>
       </div>
 
-      {/* Enlarged image */}
-      {flipped && (
+      {/* Enlarged recognition image — same close behavior as the screenshot viewer */}
+      {showRecognition && (
         <div
-          className="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 p-6 backdrop-blur-md group-focus-within/recognition:flex"
-          onClick={(event) => event.stopPropagation()}
+          className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/95 p-5 backdrop-blur-2xl sm:p-8"
+          onClick={closeRecognition}
         >
-          <div className="relative max-h-[90vh] max-w-[95vw]">
+          <div
+            className="relative flex max-h-[92vh] max-w-[95vw] items-center justify-center"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={closeRecognition}
+              aria-label="Close recognition viewer"
+              className="absolute right-2 top-2 z-[100] flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-xl text-zinc-400 backdrop-blur-xl transition hover:bg-white/[0.1] hover:text-white sm:-right-3 sm:-top-3"
+            >
+              ×
+            </button>
+
             <img
               src={image}
               alt={`${title} recognition certificate enlarged`}
@@ -1363,7 +1408,7 @@ function RecognitionFlipCard({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
