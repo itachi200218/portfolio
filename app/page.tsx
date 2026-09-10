@@ -1014,7 +1014,7 @@ function CertificationCard({
   const [showCertificate, setShowCertificate] = useState(false);
 const [selectedImage, setSelectedImage] = useState<string | null>(null);
 const [flipped, setFlipped] = useState(false);
-
+const [miniResetKey, setMiniResetKey] = useState(0);
   const certificateImages =
     images?.length
       ? images
@@ -1033,6 +1033,7 @@ const closeCertificate = () => {
   setShowCertificate(false);
   setSelectedImage(null);
   setFlipped(false);
+  setMiniResetKey((key) => key + 1);
 };
 
   return (
@@ -1178,11 +1179,12 @@ const closeCertificate = () => {
 
                   return (
                     <CertificateMiniCard
-                      key={certificate}
-                      name={names[index] ?? `Certificate ${index + 1}`}
-                      image={certificate}
-                      onOpen={() => openCertificate(certificate)}
-                    />
+  key={certificate}
+  name={names[index] ?? `Certificate ${index + 1}`}
+  image={certificate}
+  onOpen={() => openCertificate(certificate)}
+  resetKey={miniResetKey}
+/>
                   );
                 })}
               </div>
@@ -1229,17 +1231,34 @@ function CertificateMiniCard({
   name,
   image,
   onOpen,
+  resetKey,
 }: {
   name: string;
   image: string;
   onOpen: () => void;
+  resetKey: number;
 }) {
+  const [flipped, setFlipped] = useState(false);
+
+  useEffect(() => {
+    setFlipped(false);
+  }, [resetKey]);
   return (
     <div
       className="group/mini h-full min-h-[95px] cursor-pointer [perspective:800px]"
-      onClick={onOpen}
+      onClick={() => {
+        setFlipped(true);
+
+        setTimeout(() => {
+          onOpen();
+        }, 250);
+      }}
     >
-      <div className="relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover/mini:[transform:rotateY(180deg)]">
+      <div
+        className={`relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] group-hover/mini:[transform:rotateY(180deg)] ${
+          flipped ? "[transform:rotateY(180deg)]" : ""
+        }`}
+      >
 
         {/* FRONT */}
         <div className="absolute inset-0 [backface-visibility:hidden]">
@@ -1325,7 +1344,13 @@ function RecognitionFlipCard({
           <div className="absolute inset-0 [backface-visibility:hidden]">
             <div
               className="h-full cursor-pointer"
-              onClick={() => setFlipped(true)}
+              onClick={() => {
+                setFlipped(true);
+
+                setTimeout(() => {
+                  openRecognition();
+                }, 250);
+              }}
               role="presentation"
             >
               <LiquidGlass className="h-full p-8">
