@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";// import { useState } from "react";
 import LiquidGlass from "@/components/LiquidGlass";
 
@@ -685,7 +686,7 @@ const scrollToTop = () => {
           <div className="mt-16 grid gap-6 md:grid-cols-2">
             <ScrollReveal>
               <RecognitionFlipCard
-                title="Trend Setter"
+                title="The Energy and Optimism"
                 organization="Cognizant"
                 description="Recognition for the SFCC Promotion Validation Tool and its impact on reducing validation effort."
                 image="/certifications/certificate.jpg"
@@ -694,7 +695,7 @@ const scrollToTop = () => {
 
             <ScrollReveal delay={150}>
               <RecognitionFlipCard
-                title="The Energy and Optimism"
+                title="Threndsetter Award"
                 organization="Cognizant"
                 description="Recognition for valuable contribution and outstanding performance."
                 image="/certifications/Trendsetter.jpg"
@@ -1190,32 +1191,37 @@ const closeCertificate = () => {
         )}
       </div>
 
-      {/* ENLARGED CERTIFICATE */}
-      {showCertificate && selectedImage && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-6 backdrop-blur-md animate-[fadeIn_300ms_ease-out]"
-          onClick={closeCertificate}
-        >
+      {/* Enlarged certificate — rendered outside ScrollReveal stacking context */}
+      {showCertificate &&
+        selectedImage &&
+        typeof document !== "undefined" &&
+        createPortal(
           <div
-            className="relative max-h-[90vh] max-w-[95vw] animate-[certificatePop_500ms_cubic-bezier(0.16,1,0.3,1)]"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/80 p-6 backdrop-blur-md animate-[fadeIn_300ms_ease-out]"
+            onClick={closeCertificate}
           >
-            <button
-              type="button"
-              onClick={closeCertificate}
-              className="absolute -right-3 -top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/80 text-xl text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:bg-white/20"
+            <div
+              className="relative max-h-[90vh] max-w-[95vw] animate-[certificatePop_500ms_cubic-bezier(0.16,1,0.3,1)]"
+              onClick={(e) => e.stopPropagation()}
             >
-              ×
-            </button>
+              <button
+                type="button"
+                onClick={closeCertificate}
+                aria-label="Close certificate viewer"
+                className="absolute -right-3 -top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/80 text-xl text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:bg-white/20"
+              >
+                ×
+              </button>
 
-            <img
-              src={selectedImage}
-              alt={`${title} certificate`}
-              className="max-h-[90vh] max-w-[95vw] rounded-xl object-contain shadow-[0_25px_100px_rgba(0,0,0,0.7)]"
-            />
-          </div>
-        </div>
-      )}
+              <img
+                src={selectedImage}
+                alt={`${title} certificate`}
+                className="max-h-[90vh] max-w-[95vw] rounded-xl object-contain shadow-[0_25px_100px_rgba(0,0,0,0.7)]"
+              />
+            </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 }
@@ -1309,27 +1315,18 @@ function RecognitionFlipCard({
 
   return (
     <>
-      <div
-        className="group/recognition h-[300px] cursor-pointer [perspective:1200px]"
-        onClick={() => setFlipped((value) => !value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            setFlipped((value) => !value);
-          }
-        }}
-        role="button"
-        tabIndex={0}
-        aria-label={`View ${title} recognition`}
-      >
+      <div className="group/recognition h-[300px] [perspective:1200px]">
         <div
-          className={`relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] ${
+          className={`relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] md:group-hover/recognition:[transform:rotateY(180deg)] ${
             flipped ? "[transform:rotateY(180deg)]" : ""
-          } md:group-hover/recognition:[transform:rotateY(180deg)]`}
+          }`}
         >
           {/* FRONT */}
           <div className="absolute inset-0 [backface-visibility:hidden]">
-            <LiquidGlass className="h-full p-8">
+            <LiquidGlass
+              className="h-full cursor-pointer p-8"
+              onClick={() => setFlipped(true)}
+            >
               <div className="flex h-full flex-col justify-between">
                 <div>
                   <p className="text-xs uppercase tracking-[0.25em] text-zinc-600">
@@ -1381,33 +1378,36 @@ function RecognitionFlipCard({
         </div>
       </div>
 
-      {/* Enlarged recognition image — same close behavior as the screenshot viewer */}
-      {showRecognition && (
-        <div
-          className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/95 p-5 backdrop-blur-2xl sm:p-8"
-          onClick={closeRecognition}
-        >
+      {/* Enlarged recognition image — rendered outside ScrollReveal stacking context */}
+      {showRecognition &&
+        typeof document !== "undefined" &&
+        createPortal(
           <div
-            className="relative flex max-h-[92vh] max-w-[95vw] items-center justify-center"
-            onClick={(event) => event.stopPropagation()}
+            className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/80 p-6 backdrop-blur-md animate-[fadeIn_300ms_ease-out]"
+            onClick={closeRecognition}
           >
-            <button
-              type="button"
-              onClick={closeRecognition}
-              aria-label="Close recognition viewer"
-              className="absolute right-2 top-2 z-[100] flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-xl text-zinc-400 backdrop-blur-xl transition hover:bg-white/[0.1] hover:text-white sm:-right-3 sm:-top-3"
+            <div
+              className="relative max-h-[90vh] max-w-[95vw] animate-[certificatePop_500ms_cubic-bezier(0.16,1,0.3,1)]"
+              onClick={(event) => event.stopPropagation()}
             >
-              ×
-            </button>
+              <button
+                type="button"
+                onClick={closeRecognition}
+                aria-label="Close recognition viewer"
+                className="absolute -right-3 -top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/80 text-xl text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:bg-white/20"
+              >
+                ×
+              </button>
 
-            <img
-              src={image}
-              alt={`${title} recognition certificate enlarged`}
-              className="max-h-[90vh] max-w-[95vw] rounded-xl object-contain shadow-[0_25px_100px_rgba(0,0,0,0.7)]"
-            />
-          </div>
-        </div>
-      )}
+              <img
+                src={image}
+                alt={`${title} recognition certificate enlarged`}
+                className="max-h-[90vh] max-w-[95vw] rounded-xl object-contain shadow-[0_25px_100px_rgba(0,0,0,0.7)]"
+              />
+            </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 }
