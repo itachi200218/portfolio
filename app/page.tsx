@@ -1323,10 +1323,12 @@ function RecognitionFlipCard({
         >
           {/* FRONT */}
           <div className="absolute inset-0 [backface-visibility:hidden]">
-            <LiquidGlass
-              className="h-full cursor-pointer p-8"
+            <div
+              className="h-full cursor-pointer"
               onClick={() => setFlipped(true)}
+              role="presentation"
             >
+              <LiquidGlass className="h-full p-8">
               <div className="flex h-full flex-col justify-between">
                 <div>
                   <p className="text-xs uppercase tracking-[0.25em] text-zinc-600">
@@ -1346,7 +1348,8 @@ function RecognitionFlipCard({
                   Hover to view recognition →
                 </p>
               </div>
-            </LiquidGlass>
+              </LiquidGlass>
+            </div>
           </div>
 
           {/* BACK */}
