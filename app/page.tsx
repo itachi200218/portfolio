@@ -695,7 +695,7 @@ const scrollToTop = () => {
 
             <ScrollReveal delay={150}>
               <RecognitionFlipCard
-                title="Threndsetter Award"
+                title="Trendsetter Award"
                 organization="Cognizant"
                 description="Recognition for valuable contribution and outstanding performance."
                 image="/certifications/Trendsetter.jpg"
