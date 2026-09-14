@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const technologies = [
@@ -223,6 +223,68 @@ function MetricCard({
 }
 
 export default function AllureIQCaseStudy() {
+  const router = useRouter();
+  const [activeSection, setActiveSection] = useState("top");
+  const [mobileSectionsOpen, setMobileSectionsOpen] = useState(false);
+
+  const sectionTabs = [
+    ["01", "Overview", "overview"],
+    ["02", "Intelligence", "intelligence"],
+    ["03", "Capabilities", "capabilities"],
+    ["04", "AI Reports", "ai-reports"],
+    ["05", "Architecture", "architecture"],
+    ["06", "Data", "data"],
+    ["07", "Search", "search"],
+    ["08", "CI/CD", "cicd"],
+    ["09", "Technology", "technology"],
+    ["10", "Maven", "maven"],
+    ["11", "Decisions", "decisions"],
+  ] as const;
+
+  useEffect(() => {
+    const ids = ["top", ...sectionTabs.map(([, , id]) => id)];
+    const elements = ids
+      .map((id) => document.getElementById(id))
+      .filter((element): element is HTMLElement => Boolean(element));
+
+    if (!elements.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visible?.target instanceof HTMLElement) {
+          setActiveSection(visible.target.id);
+        }
+      },
+      {
+        rootMargin: "-126px 0px -55% 0px",
+        threshold: [0.05, 0.15, 0.3, 0.5],
+      }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+
+    const headerOffset = window.innerWidth >= 1024 ? 126 : 118;
+    const targetY =
+      element.getBoundingClientRect().top + window.scrollY - headerOffset;
+
+    window.scrollTo({
+      top: Math.max(0, targetY),
+      behavior: "smooth",
+    });
+    setMobileSectionsOpen(false);
+  };
+
   return (
     <main className="min-h-screen scroll-smooth overflow-x-clip bg-[#02030a] text-white selection:bg-cyan-400/20 selection:text-cyan-100">
       {/* Background atmosphere */}
@@ -235,17 +297,18 @@ export default function AllureIQCaseStudy() {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 border-b border-white/[0.08] bg-black/35 backdrop-blur-2xl backdrop-saturate-[180%]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-          <Link
-            href="/"
+          <button
+            type="button"
+            onClick={() => router.back()}
             className="group flex items-center gap-3 text-sm text-zinc-400 transition hover:text-white"
           >
             <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.05] transition group-hover:bg-white/[0.1]">
               ←
             </span>
             Back to Portfolio
-          </Link>
+          </button>
 
-          <div className="hidden items-center gap-6 text-xs text-zinc-500 md:flex">
+          <div className="hidden items-center gap-6 text-xs text-zinc-500 lg:flex">
             <span>AllureIQ</span>
             <span className="h-1 w-1 rounded-full bg-cyan-400" />
             <span>Case Study</span>
@@ -253,19 +316,105 @@ export default function AllureIQCaseStudy() {
         </div>
       </nav>
 
+      {/* Section navigation */}
+      <div className="sticky top-[69px] z-40 border-b border-white/[0.07] bg-black/25 backdrop-blur-2xl backdrop-saturate-[180%]">
+        <div className="mx-auto max-w-7xl px-1 lg:px-6">
+          <div className="relative lg:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileSectionsOpen((open) => !open)}
+              className="flex h-12 w-full items-center justify-between text-left"
+              aria-expanded={mobileSectionsOpen}
+              aria-label="Open section navigation"
+            >
+              <span className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+                Section
+              </span>
+              <span className="flex items-center gap-3 text-sm text-zinc-300">
+                {sectionTabs.find(([, , id]) => id === activeSection)?.[1] ?? "Overview"}
+                <span className="text-zinc-600">{mobileSectionsOpen ? "−" : "+"}</span>
+              </span>
+            </button>
+
+            {mobileSectionsOpen && (
+              <div className="absolute inset-x-0 top-full grid grid-cols-2 gap-2 border-x border-b border-white/[0.08] bg-[#080910]/95 p-3 shadow-2xl backdrop-blur-2xl">
+                <button
+                  type="button"
+                  onClick={() => scrollToSection("top")}
+                  className={`rounded-2xl border px-3 py-3 text-left text-xs transition ${
+                    activeSection === "top"
+                      ? "border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300"
+                      : "border-white/[0.07] bg-white/[0.025] text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
+                  }`}
+                >
+                  <span className="block text-[10px] text-zinc-600">00</span>
+                  <span className="mt-1 block">Home</span>
+                </button>
+
+                {sectionTabs.map(([number, title, id]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => scrollToSection(id)}
+                    className={`rounded-2xl border px-3 py-3 text-left text-xs transition ${
+                      activeSection === id
+                        ? "border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300"
+                        : "border-white/[0.07] bg-white/[0.025] text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
+                    }`}
+                  >
+                    <span className="block text-[10px] text-zinc-600">{number}</span>
+                    <span className="mt-1 block">{title}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="hidden h-12 items-center gap-1 overflow-x-auto [scrollbar-width:none] lg:flex [&::-webkit-scrollbar]:hidden">
+            <button
+              type="button"
+              onClick={() => scrollToSection("top")}
+              className={`shrink-0 rounded-full px-3 py-1.5 text-xs transition ${
+                activeSection === "top"
+                  ? "bg-white/[0.08] text-white"
+                  : "text-zinc-600 hover:bg-white/[0.05] hover:text-zinc-300"
+              }`}
+            >
+              Home
+            </button>
+
+            {sectionTabs.map(([number, title, id]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => scrollToSection(id)}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-xs transition ${
+                  activeSection === id
+                    ? "bg-cyan-400/[0.09] text-cyan-300"
+                    : "text-zinc-600 hover:bg-white/[0.05] hover:text-zinc-300"
+                }`}
+              >
+                <span className="mr-1.5 text-zinc-700">{number}</span>
+                {title}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Hero */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 pb-24 pt-24 lg:px-10 lg:pt-32">
+        <section id="top" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 pb-24 pt-24 lg:px-10 lg:pt-32">
           <div className="max-w-5xl">
             <div className="mb-6 flex flex-wrap items-center gap-3">
               <span className="rounded-full border border-cyan-400/20 bg-cyan-400/[0.08] px-3 py-1 text-xs font-medium tracking-wider text-cyan-300">
-                FLAGSHIP TEST ENGINEERING PROJECT
+                ENGINEERING INTELLIGENCE PLATFORM
               </span>
 
               <span className="text-xs text-zinc-600">•</span>
 
               <span className="text-xs tracking-wider text-zinc-500">
-                AI-POWERED UNIFIED TEST INTELLIGENCE
+                AI-POWERED ENGINEERING INTELLIGENCE
               </span>
             </div>
 
@@ -274,15 +423,14 @@ export default function AllureIQCaseStudy() {
             </h1>
 
             <p className="mt-4 text-xl font-light text-zinc-300 md:text-2xl">
-              An AI-powered unified test intelligence platform built around
-              automation, analytics, reporting and CI/CD.
+              A reusable engineering intelligence platform that transforms automated API execution into
+              persistent, searchable and AI-assisted engineering intelligence.
             </p>
 
             <p className="mt-6 max-w-4xl text-base leading-8 text-zinc-500">
-              AllureIQ Framework is an advanced automation and reporting
-              ecosystem combining REST API testing, AI intelligence, real-time
-              analytics and CI/CD automation into an end-to-end intelligent
-              testing solution.
+              AllureIQ Framework connects API automation, reporting, AI analysis, persistence,
+              search and CI/CD into a reusable platform for understanding and improving
+              software execution at scale.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-2">
@@ -334,9 +482,68 @@ export default function AllureIQCaseStudy() {
         </section>
       </ScrollReveal>
 
-      {/* Overview */}
+      {/* Problem & Approach */}
       <ScrollReveal>
         <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <GlassCard>
+              <p className="text-xs uppercase tracking-[0.2em] text-cyan-400">
+                The Problem
+              </p>
+              <h3 className="mt-5 text-2xl font-medium tracking-tight">
+                Automation produces data. Engineers still need intelligence.
+              </h3>
+              <p className="mt-4 leading-8 text-zinc-500">
+                Test execution generates reports, failures, payloads and
+                performance data, but understanding recurring issues and
+                historical behavior can still require manual investigation.
+              </p>
+            </GlassCard>
+
+            <GlassCard>
+              <p className="text-xs uppercase tracking-[0.2em] text-cyan-400">
+                The Approach
+              </p>
+              <h3 className="mt-5 text-2xl font-medium tracking-tight">
+                Turn execution data into a reusable intelligence layer.
+              </h3>
+              <p className="mt-4 leading-8 text-zinc-500">
+                AllureIQ connects automation, reporting, persistence, search,
+                AI analysis and CI/CD so execution results can become
+                searchable, explainable and reusable engineering knowledge.
+              </p>
+            </GlassCard>
+          </div>
+        </section>
+      </ScrollReveal>
+
+      {/* Engineering Highlights */}
+      <ScrollReveal>
+        <section className="relative z-10 mx-auto max-w-7xl px-6 pb-24 lg:px-10">
+          <div className="overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-2xl">
+            <div className="grid divide-y divide-white/[0.06] md:grid-cols-4 md:divide-x md:divide-y-0">
+              {[
+                ["3.2.6", "Framework Version", "Reusable Maven dependency"],
+                ["AI", "Intelligence Layer", "Analysis, explanations & recommendations"],
+                ["MongoDB", "Persistent Context", "Executions, reports & diagnostic data"],
+                ["CI/CD", "Delivery Ready", "GitHub Actions automation"],
+              ].map(([value, title, description]) => (
+                <div key={title} className="p-6">
+                  <span className="text-xs text-cyan-400">{value}</span>
+                  <h3 className="mt-4 text-sm font-medium">{title}</h3>
+                  <p className="mt-2 text-xs leading-5 text-zinc-600">
+                    {description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
+
+      {/* Overview */}
+      <ScrollReveal>
+        <section id="overview" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 py-24 lg:px-10">
           <SectionHeading
             number="01"
             title="What is AllureIQ?"
@@ -384,7 +591,7 @@ export default function AllureIQCaseStudy() {
 
       {/* Metrics */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="intelligence" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 py-24 lg:px-10">
           <SectionHeading
             number="02"
             title="Test Intelligence at a Glance"
@@ -418,7 +625,7 @@ export default function AllureIQCaseStudy() {
 
       {/* Capabilities */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="capabilities" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 py-24 lg:px-10">
           <SectionHeading
             number="03"
             title="Core Capabilities"
@@ -445,7 +652,7 @@ export default function AllureIQCaseStudy() {
 
       {/* AI Reports */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="ai-reports" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 py-24 lg:px-10">
           <SectionHeading
             number="04"
             title="AI Test Intelligence Reports"
@@ -605,7 +812,7 @@ export default function AllureIQCaseStudy() {
 
       {/* Architecture */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="architecture" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 py-24 lg:px-10">
           <SectionHeading
             number="05"
             title="AI-Allure-Reuse Architecture"
@@ -644,7 +851,7 @@ export default function AllureIQCaseStudy() {
 
       {/* Data management */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="data" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 py-24 lg:px-10">
           <SectionHeading
             number="06"
             title="Project & Data Management"
@@ -713,7 +920,7 @@ export default function AllureIQCaseStudy() {
 
       {/* Search */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="search" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 py-24 lg:px-10">
           <SectionHeading
             number="07"
             title="Enhanced Hybrid Search"
@@ -792,7 +999,7 @@ export default function AllureIQCaseStudy() {
 
       {/* CI/CD */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="cicd" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 py-24 lg:px-10">
           <SectionHeading
             number="08"
             title="CI/CD Automation"
@@ -845,7 +1052,7 @@ export default function AllureIQCaseStudy() {
 
       {/* Tech architecture */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="technology" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 py-24 lg:px-10">
           <SectionHeading
             number="09"
             title="Technology Architecture"
@@ -877,7 +1084,7 @@ export default function AllureIQCaseStudy() {
 
       {/* Maven */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="maven" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 py-24 lg:px-10">
           <SectionHeading
             number="10"
             title="Reusable Maven Framework"
@@ -922,7 +1129,7 @@ export default function AllureIQCaseStudy() {
 
       {/* Engineering decisions */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="decisions" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 py-24 lg:px-10">
           <SectionHeading
             number="11"
             title="Engineering Decisions"
@@ -985,22 +1192,32 @@ export default function AllureIQCaseStudy() {
                 platform.
               </p>
 
-              <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <a
-                  href="https://github.com/itachi200218/AllureIQ-v3"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full border border-white/[0.12] bg-white/[0.07] px-6 py-3 text-sm text-zinc-200 transition hover:bg-white/[0.12]"
-                >
-                  View AllureIQ on GitHub →
-                </a>
+              <div className="mt-8">
+                <p className="mb-4 text-xs uppercase tracking-[0.2em] text-zinc-600">
+                  Source Code
+                </p>
 
-                <Link
-                  href="/"
-                  className="rounded-full border border-white/[0.08] px-6 py-3 text-sm text-zinc-400 transition hover:bg-white/[0.05] hover:text-white"
-                >
-                  Back to Portfolio
-                </Link>
+                <div className="flex flex-wrap justify-center gap-3">
+                  <a
+                    href="https://github.com/itachi200218/AllureIQ-v3"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group inline-flex items-center justify-center rounded-full border border-white/[0.14] bg-white/[0.08] px-6 py-3 text-sm text-zinc-200 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.24] hover:bg-white/[0.13] hover:text-white"
+                  >
+                    View AllureIQ on GitHub
+                    <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">
+                      →
+                    </span>
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => router.back()}
+                    className="rounded-full border border-white/[0.08] px-6 py-3 text-sm text-zinc-400 transition hover:bg-white/[0.05] hover:text-white"
+                  >
+                    Back to Portfolio
+                  </button>
+                </div>
               </div>
             </div>
           </div>

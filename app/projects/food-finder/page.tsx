@@ -2,6 +2,7 @@
 import FoodFinderUIExplorer from "./FoodFinderUIExplorer";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const technologies = [
   "Python",
@@ -58,6 +59,19 @@ const capabilities = [
     icon: "▣",
   },
 ];
+
+const sectionTabs = [
+  ["01", "Overview", "overview"],
+  ["02", "Platform", "platform"],
+  ["03", "Applications", "applications"],
+  ["04", "Search", "search"],
+  ["05", "Admin Intelligence", "admin-intelligence"],
+  ["06", "Data & Performance", "data-performance"],
+  ["07", "Gemini AI", "gemini-ai"],
+  ["08", "Architecture", "architecture"],
+  ["09", "Testing", "testing"],
+  ["10", "Decisions", "decisions"],
+] as const;
 
 const architecturePoints = [
   "User Recipe Platform",
@@ -343,6 +357,54 @@ function AppFlipCard({
 }
 
 export default function FoodFinderCaseStudy() {
+  const router = useRouter();
+  const [activeSection, setActiveSection] = useState("top");
+  const [mobileSectionsOpen, setMobileSectionsOpen] = useState(false);
+
+  useEffect(() => {
+    const ids = ["top", ...sectionTabs.map(([, , id]) => id)];
+    const elements = ids
+      .map((id) => document.getElementById(id))
+      .filter((element): element is HTMLElement => Boolean(element));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visible[0]?.target?.id) setActiveSection(visible[0].target.id);
+      },
+      {
+        rootMargin: "-126px 0px -55% 0px",
+        threshold: [0.05, 0.15, 0.3, 0.5],
+      }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+
+    const headerOffset = window.innerWidth >= 1024 ? 126 : 118;
+    const targetY =
+      element.getBoundingClientRect().top + window.scrollY - headerOffset;
+
+    window.scrollTo({
+      top: Math.max(0, targetY),
+      behavior: "smooth",
+    });
+
+    setMobileSectionsOpen(false);
+  };
+
+  const handleBack = () => {
+    router.back();
+  };
+
   return (
     <main className="min-h-screen scroll-smooth overflow-x-clip bg-[#02030a] text-white selection:bg-cyan-400/20 selection:text-cyan-100">
       <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
@@ -353,15 +415,16 @@ export default function FoodFinderCaseStudy() {
 
       <nav className="sticky top-0 z-50 border-b border-white/[0.08] bg-black/35 backdrop-blur-2xl backdrop-saturate-[180%]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
-          <Link
-            href="/"
+          <button
+            type="button"
+            onClick={handleBack}
             className="group flex items-center gap-3 text-sm text-zinc-400 transition hover:text-white"
           >
             <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.05] transition group-hover:bg-white/[0.1]">
               ←
             </span>
             Back to Portfolio
-          </Link>
+          </button>
 
           <div className="hidden items-center gap-6 text-xs text-zinc-500 md:flex">
             <span>Food Finder</span>
@@ -371,17 +434,105 @@ export default function FoodFinderCaseStudy() {
         </div>
       </nav>
 
+      {/* Section navigation */}
+      <div className="sticky top-[69px] z-40 border-b border-white/[0.06] bg-black/25 backdrop-blur-2xl backdrop-saturate-[180%]">
+        <div className="mx-auto max-w-7xl px-1 lg:px-6">
+          <div className="hidden h-12 items-center gap-1 overflow-x-auto [scrollbar-width:none] lg:flex [&::-webkit-scrollbar]:hidden">
+            <button
+              type="button"
+              onClick={() => scrollToSection("top")}
+              className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] transition ${
+                activeSection === "top"
+                  ? "bg-cyan-400/10 text-cyan-300"
+                  : "text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
+              }`}
+            >
+              Home
+            </button>
+            {sectionTabs.map(([number, title, id]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => scrollToSection(id)}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] transition ${
+                  activeSection === id
+                    ? "bg-cyan-400/10 text-cyan-300"
+                    : "text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
+                }`}
+              >
+                {number} · {title}
+              </button>
+            ))}
+          </div>
+
+          <div className="relative lg:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileSectionsOpen((open) => !open)}
+              className="flex h-12 w-full items-center justify-between text-left"
+            >
+              <span className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+                Section
+              </span>
+              <span className="flex items-center gap-3 text-xs text-zinc-300">
+                {activeSection === "top"
+                  ? "Home"
+                  : sectionTabs.find(([, , id]) => id === activeSection)?.[1] ?? "Overview"}
+                <span className={`text-zinc-500 transition-transform ${mobileSectionsOpen ? "rotate-180" : ""}`}>
+                  ↓
+                </span>
+              </span>
+            </button>
+
+            {mobileSectionsOpen && (
+              <div className="absolute left-0 right-0 top-full border-x border-b border-white/[0.08] bg-[#080a12]/95 p-3 shadow-2xl backdrop-blur-2xl">
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection("top")}
+                    className={`rounded-2xl border px-3 py-3 text-left text-xs transition ${
+                      activeSection === "top"
+                        ? "border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300"
+                        : "border-white/[0.07] bg-white/[0.025] text-zinc-400 hover:bg-white/[0.05]"
+                    }`}
+                  >
+                    <span className="block text-[10px] text-zinc-600">—</span>
+                    Home
+                  </button>
+
+                  {sectionTabs.map(([number, title, id]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => scrollToSection(id)}
+                      className={`rounded-2xl border px-3 py-3 text-left text-xs transition ${
+                        activeSection === id
+                          ? "border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300"
+                          : "border-white/[0.07] bg-white/[0.025] text-zinc-400 hover:bg-white/[0.05]"
+                      }`}
+                    >
+                      <span className="block text-[10px] text-zinc-600">{number}</span>
+                      {title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Hero */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 pb-24 pt-24 lg:px-10 lg:pt-32">
+        <section id="top" className="scroll-mt-32 relative z-10 mx-auto max-w-7xl px-6 pb-24 pt-24 lg:px-10 lg:pt-32">
           <div className="max-w-5xl">
             <div className="mb-6 flex flex-wrap items-center gap-3">
               <span className="rounded-full border border-cyan-400/20 bg-cyan-400/[0.08] px-3 py-1 text-xs font-medium tracking-wider text-cyan-300">
-                FULL-STACK AI APPLICATION
+                FULL-STACK AI PLATFORM
               </span>
               <span className="text-xs text-zinc-600">•</span>
               <span className="text-xs tracking-wider text-zinc-500">
-                USER + ADMIN PLATFORM
+                INTELLIGENT APPLICATION ECOSYSTEM
               </span>
             </div>
 
@@ -390,15 +541,15 @@ export default function FoodFinderCaseStudy() {
             </h1>
 
             <p className="mt-4 text-xl font-light text-zinc-300 md:text-2xl">
-              An AI-powered food discovery platform combining intelligent
-              search, recipe management, caching and automation.
+              A full-stack AI platform combining intelligent search, conversational
+              interfaces, data management, caching and automation.
             </p>
 
             <p className="mt-6 max-w-4xl text-base leading-8 text-zinc-500">
-              Food Finder brings together a consumer-facing recipe platform
-              and a dedicated administration application. The system combines
-              Flask, Spring Boot, MySQL, Redis and Gemini AI to create a
-              searchable, conversational and manageable recipe ecosystem.
+              Food Finder brings together a consumer-facing application and a dedicated
+              administration platform. Flask, Spring Boot, MySQL, Redis and Gemini AI
+              work together to create a searchable, conversational and manageable
+              application ecosystem.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-2">
@@ -444,9 +595,68 @@ export default function FoodFinderCaseStudy() {
         </section>
       </ScrollReveal>
 
-      {/* Overview */}
+      {/* Problem & Approach */}
       <ScrollReveal>
         <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <GlassCard>
+              <p className="text-xs uppercase tracking-[0.2em] text-cyan-400">
+                The Problem
+              </p>
+              <h3 className="mt-5 text-2xl font-medium tracking-tight">
+                Recipe discovery should not depend on exact searches.
+              </h3>
+              <p className="mt-4 leading-8 text-zinc-500">
+                Traditional recipe applications often rely on rigid search and
+                static browsing, while operational management and intelligent
+                assistance live in separate experiences.
+              </p>
+            </GlassCard>
+
+            <GlassCard>
+              <p className="text-xs uppercase tracking-[0.2em] text-cyan-400">
+                The Approach
+              </p>
+              <h3 className="mt-5 text-2xl font-medium tracking-tight">
+                Build discovery, intelligence and operations as one platform.
+              </h3>
+              <p className="mt-4 leading-8 text-zinc-500">
+                Food Finder combines layered search, AI fallback,
+                conversational interaction, persistent data, caching and a
+                dedicated administration surface into one connected system.
+              </p>
+            </GlassCard>
+          </div>
+        </section>
+      </ScrollReveal>
+
+      {/* Engineering Highlights */}
+      <ScrollReveal>
+        <section className="relative z-10 mx-auto max-w-7xl px-6 pb-24 lg:px-10">
+          <div className="overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-2xl">
+            <div className="grid divide-y divide-white/[0.06] md:grid-cols-4 md:divide-x md:divide-y-0">
+              {[
+                ["02", "Application Surfaces", "User App · Admin App"],
+                ["AI", "Intelligence Layer", "Gemini search & conversation"],
+                ["MySQL", "Persistent Data", "Recipes, users & managed data"],
+                ["Redis", "Fast Path", "Caching & intent-related operations"],
+              ].map(([value, title, description]) => (
+                <div key={title} className="p-6">
+                  <span className="text-xs text-cyan-400">{value}</span>
+                  <h3 className="mt-4 text-sm font-medium">{title}</h3>
+                  <p className="mt-2 text-xs leading-5 text-zinc-600">
+                    {description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
+
+      {/* Overview */}
+      <ScrollReveal>
+        <section id="overview" className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
           <SectionHeading
             number="01"
             title="What is Food Finder?"
@@ -493,7 +703,7 @@ export default function FoodFinderCaseStudy() {
 
       {/* Metrics */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="platform" className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
           <SectionHeading
             number="02"
             title="Platform at a Glance"
@@ -527,7 +737,7 @@ export default function FoodFinderCaseStudy() {
 
       {/* Apps */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="applications" className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
           <SectionHeading
             number="03"
             title="Two Applications. One Platform."
@@ -567,7 +777,7 @@ export default function FoodFinderCaseStudy() {
 
       {/* Search */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="search" className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
           <SectionHeading
             number="04"
             title="Intelligent Recipe Search"
@@ -651,7 +861,7 @@ export default function FoodFinderCaseStudy() {
 
       {/* Admin intelligence */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="admin-intelligence" className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
           <SectionHeading
             number="05"
             title="Admin Intelligence"
@@ -701,7 +911,7 @@ export default function FoodFinderCaseStudy() {
 
       {/* Data */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="data-performance" className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
           <SectionHeading
             number="06"
             title="Data & Performance"
@@ -776,7 +986,7 @@ export default function FoodFinderCaseStudy() {
 
       {/* AI */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="gemini-ai" className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
           <SectionHeading
             number="07"
             title="Gemini AI Layer"
@@ -820,7 +1030,7 @@ export default function FoodFinderCaseStudy() {
 
       {/* Backend architecture */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="architecture" className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
           <SectionHeading
             number="08"
             title="Application Architecture"
@@ -859,7 +1069,7 @@ export default function FoodFinderCaseStudy() {
 
       {/* Testing */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="testing" className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
           <SectionHeading
             number="09"
             title="Testing & Automation"
@@ -925,7 +1135,7 @@ export default function FoodFinderCaseStudy() {
 
       {/* Engineering decisions */}
       <ScrollReveal>
-        <section className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <section id="decisions" className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:px-10">
           <SectionHeading
             number="10"
             title="Engineering Decisions"
@@ -991,22 +1201,32 @@ export default function FoodFinderCaseStudy() {
                 Redis and automation into one engineering project.
               </p>
 
-              <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <Link
-                  href="https://github.com/itachi200218/Food-finder"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-full border border-cyan-400/15 bg-cyan-400/[0.05] px-6 py-3 text-sm text-cyan-300 transition hover:-translate-y-0.5 hover:bg-cyan-400/[0.1] hover:text-cyan-200"
-                >
-                  View on GitHub ↗
-                </Link>
+              <div className="mt-8">
+                <p className="mb-4 text-xs uppercase tracking-[0.2em] text-zinc-600">
+                  Source Code
+                </p>
 
-                <Link
-                  href="/"
-                  className="rounded-full border border-white/[0.08] px-6 py-3 text-sm text-zinc-400 transition hover:bg-white/[0.05] hover:text-white"
-                >
-                  Back to Portfolio
-                </Link>
+                <div className="flex flex-wrap justify-center gap-3">
+                  <Link
+                    href="https://github.com/itachi200218/Food-finder"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center justify-center rounded-full border border-cyan-400/20 bg-cyan-400/[0.06] px-6 py-3 text-sm text-cyan-200 transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-300/30 hover:bg-cyan-400/[0.11] hover:text-white"
+                  >
+                    View Food Finder on GitHub
+                    <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">
+                      →
+                    </span>
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="rounded-full border border-white/[0.08] px-6 py-3 text-sm text-zinc-400 transition hover:bg-white/[0.05] hover:text-white"
+                  >
+                    Back to Portfolio
+                  </button>
+                </div>
               </div>
             </div>
           </div>

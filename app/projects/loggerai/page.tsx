@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 function ScrollReveal({
@@ -153,6 +154,18 @@ function Metric({
   );
 }
 
+const sectionTabs = [
+  ["01", "Problem", "problem"],
+  ["02", "What It Does", "what-it-does"],
+  ["03", "Pipeline", "pipeline"],
+  ["04", "Diagnostics", "diagnostics"],
+  ["05", "AI RCA", "ai-rca"],
+  ["06", "Intelligence", "intelligence"],
+  ["07", "Spring", "spring"],
+  ["08", "Impact", "impact"],
+  ["09", "Decisions", "decisions"],
+] as const;
+
 function FlowNode({
   title,
   description,
@@ -177,36 +190,198 @@ function FlowNode({
 }
 
 export default function LoggerAICaseStudy() {
+  const router = useRouter();
+  const [mobileSectionsOpen, setMobileSectionsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("top");
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  useEffect(() => {
+    const ids = ["top", ...sectionTabs.map(([, , id]) => id)];
+    const elements = ids
+      .map((id) => document.getElementById(id))
+      .filter((element): element is HTMLElement => Boolean(element));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visible?.target instanceof HTMLElement) {
+          setActiveSection(visible.target.id);
+        }
+      },
+      {
+        threshold: [0.1, 0.25, 0.5],
+        rootMargin: "-18% 0px -65% 0px",
+      }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setMobileSectionsOpen(false);
+  };
+
+  const activeSectionLabel =
+    activeSection === "top"
+      ? "Home"
+      : sectionTabs.find(([, , id]) => id === activeSection)?.[1] ?? "Sections";
+
   return (
-    <main className="min-h-screen overflow-x-clip bg-[#050507] text-white selection:bg-cyan-300/20 selection:text-white">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute left-[8%] top-[5%] h-[420px] w-[420px] rounded-full bg-cyan-400/[0.055] blur-[120px]" />
-        <div className="absolute right-[5%] top-[25%] h-[500px] w-[500px] rounded-full bg-violet-500/[0.045] blur-[140px]" />
+    <main className="min-h-screen scroll-smooth overflow-x-clip bg-[#02030a] text-white selection:bg-cyan-400/20 selection:text-cyan-100">
+      <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
+        <div className="absolute left-[5%] top-[4%] h-[460px] w-[460px] rounded-full bg-cyan-500/[0.07] blur-[150px]" />
+        <div className="absolute right-[2%] top-[30%] h-[540px] w-[540px] rounded-full bg-purple-500/[0.065] blur-[170px]" />
+        <div className="absolute bottom-[4%] left-[30%] h-[480px] w-[480px] rounded-full bg-blue-500/[0.05] blur-[160px]" />
       </div>
 
-      <nav className="sticky top-0 z-50 border-b border-white/[0.07] bg-black/30 backdrop-blur-2xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
-          <Link
-            href="/"
-            className="text-sm font-medium tracking-tight text-white/75 transition hover:text-white"
+      <nav className="sticky top-0 z-50 border-b border-white/[0.08] bg-black/35 backdrop-blur-2xl backdrop-saturate-[180%]">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="group flex items-center gap-3 text-sm text-zinc-400 transition hover:text-white"
           >
-            ← Portfolio
-          </Link>
-          <div className="hidden text-[11px] uppercase tracking-[0.25em] text-white/35 sm:block">
-            LoggerAI · Case Study
-          </div>
-          <div className="rounded-full border border-white/10 bg-white/[0.045] px-3 py-1.5 text-[11px] text-white/50">
-            Java · Spring Boot · AI
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.05] transition group-hover:bg-white/[0.1]">
+              ←
+            </span>
+            Back to Portfolio
+          </button>
+
+          <div className="hidden items-center gap-6 text-xs text-zinc-500 md:flex">
+            <span>LoggerAI</span>
+            <span className="h-1 w-1 rounded-full bg-cyan-400" />
+            <span>Case Study</span>
           </div>
         </div>
       </nav>
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 pt-24 lg:px-8 lg:pt-36">
+      {/* SECTION NAVIGATION */}
+      <div className="sticky top-[69px] z-40 border-b border-white/[0.06] bg-black/45 backdrop-blur-2xl backdrop-saturate-[180%]">
+        {/* Desktop: full section tabs */}
+        <div className="mx-auto hidden max-w-7xl overflow-x-auto px-4 py-2.5 scrollbar-hide lg:block lg:px-10">
+          <div className="flex min-w-max items-center gap-1">
+            <button
+              type="button"
+              onClick={() => scrollToSection("top")}
+              className={`rounded-full px-3 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition ${
+                activeSection === "top"
+                  ? "bg-cyan-400/[0.08] text-cyan-300"
+                  : "text-zinc-500 hover:bg-white/[0.07] hover:text-white"
+              }`}
+            >
+              Home
+            </button>
+
+            {sectionTabs.map(([number, label, id]) => (
+              <button
+                type="button"
+                key={id}
+                onClick={() => scrollToSection(id)}
+                className={`whitespace-nowrap rounded-full px-3 py-2 text-[11px] transition ${
+                  activeSection === id
+                    ? "bg-white/[0.07] text-white"
+                    : "text-zinc-500 hover:bg-white/[0.07] hover:text-white"
+                }`}
+              >
+                <span
+                  className={`mr-1.5 ${
+                    activeSection === id ? "text-cyan-300" : "text-zinc-700"
+                  }`}
+                >
+                  {number}
+                </span>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Phone + tablet: compact section picker */}
+        <div className="relative mx-auto lg:hidden">
+          <button
+            type="button"
+            aria-expanded={mobileSectionsOpen}
+            onClick={() => setMobileSectionsOpen((open) => !open)}
+            className="flex w-full items-center justify-between px-5 py-3.5 text-left"
+          >
+            <span className="flex items-center gap-3">
+              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-cyan-400">
+                SECTION
+              </span>
+              <span className="h-1 w-1 rounded-full bg-white/20" />
+              <span className="text-sm font-medium text-zinc-200">
+                {activeSectionLabel}
+              </span>
+            </span>
+
+            <span
+              className={`flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-xs text-zinc-400 transition-transform duration-300 ${
+                mobileSectionsOpen ? "rotate-180" : ""
+              }`}
+            >
+              ↓
+            </span>
+          </button>
+
+          {mobileSectionsOpen && (
+            <div className="absolute left-3 right-3 top-full mt-2 rounded-2xl border border-white/[0.10] bg-[#080b16]/95 p-2 shadow-[0_20px_70px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+              <div className="grid grid-cols-2 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => scrollToSection("top")}
+                  className={`rounded-xl px-3 py-3 text-left text-xs transition ${
+                    activeSection === "top"
+                      ? "bg-cyan-400/[0.10] text-cyan-300"
+                      : "text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                  }`}
+                >
+                  <span className="mr-2 text-[10px] text-zinc-600">00</span>
+                  Home
+                </button>
+
+                {sectionTabs.map(([number, label, id]) => (
+                  <button
+                    type="button"
+                    key={id}
+                    onClick={() => scrollToSection(id)}
+                    className={`rounded-xl px-3 py-3 text-left text-xs transition ${
+                      activeSection === id
+                        ? "bg-cyan-400/[0.10] text-cyan-300"
+                        : "text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                    }`}
+                  >
+                    <span
+                      className={`mr-2 text-[10px] ${
+                        activeSection === id ? "text-cyan-300" : "text-zinc-600"
+                      }`}
+                    >
+                      {number}
+                    </span>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <section id="top" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 pt-24 lg:px-8 lg:pt-36">
         <ScrollReveal>
           <div className="max-w-5xl">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.045] px-4 py-2 text-xs text-cyan-200/75">
               <span className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_14px_rgba(103,232,249,.8)]" />
-              AI-Powered Framework Diagnostics
+              INTELLIGENT ENGINEERING DIAGNOSTICS
             </div>
 
             <h1 className="text-6xl font-semibold tracking-[-0.065em] text-white sm:text-7xl lg:text-[92px] lg:leading-[0.95]">
@@ -214,8 +389,8 @@ export default function LoggerAICaseStudy() {
             </h1>
 
             <p className="mt-8 max-w-3xl text-xl leading-8 tracking-[-0.02em] text-white/55 sm:text-2xl">
-              Turning complex framework logs and execution reports into
-              understandable root causes and actionable solutions with AI.
+              Turning complex execution logs and reports into structured engineering
+              insight, root-cause explanations and actionable solutions with AI.
             </p>
 
             <div className="mt-10 flex flex-wrap gap-3">
@@ -275,10 +450,51 @@ export default function LoggerAICaseStudy() {
         </ScrollReveal>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="problem" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
             number="01"
+            title="The engineering problem"
+            description="Failure diagnosis becomes expensive when engineers have to manually correlate raw logs, stack traces, execution context and report evidence."
+          />
+        </ScrollReveal>
+
+        <div className="grid gap-5 lg:grid-cols-2">
+          <GlassCard className="p-7 sm:p-9">
+            <div className="text-xs uppercase tracking-[0.22em] text-white/25">
+              Problem
+            </div>
+            <h3 className="mt-5 text-2xl font-semibold tracking-tight">
+              Automation produces evidence. Engineers still need the explanation.
+            </h3>
+            <p className="mt-4 text-sm leading-7 text-white/45">
+              Large execution trails contain the information needed to understand
+              a failure, but that information is often fragmented across logs,
+              exceptions, stack traces and reports. Finding the actual cause can
+              require significant manual investigation.
+            </p>
+          </GlassCard>
+
+          <GlassCard className="border-cyan-300/10 p-7 sm:p-9">
+            <div className="text-xs uppercase tracking-[0.22em] text-cyan-300/60">
+              Approach
+            </div>
+            <h3 className="mt-5 text-2xl font-semibold tracking-tight">
+              Build a diagnostic intelligence layer around execution data.
+            </h3>
+            <p className="mt-4 text-sm leading-7 text-white/45">
+              LoggerAI parses and structures framework evidence before applying AI
+              reasoning. The result moves beyond exception reporting toward a
+              contextual root-cause explanation and an actionable solution path.
+            </p>
+          </GlassCard>
+        </div>
+      </section>
+
+      <section id="what-it-does" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+        <ScrollReveal>
+          <SectionHeading
+            number="02"
             title="The problem"
             description="Framework failures rarely arrive as a single, clean error. The useful explanation is often buried inside a much larger execution trail."
           />
@@ -312,10 +528,10 @@ export default function LoggerAICaseStudy() {
         </div>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="pipeline" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="02"
+            number="03"
             title="What LoggerAI does"
             description="LoggerAI takes the diagnostic data produced by a framework and converts it into an AI-assisted failure explanation."
           />
@@ -349,10 +565,10 @@ export default function LoggerAICaseStudy() {
         </ScrollReveal>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="diagnostics" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="03"
+            number="04"
             title="Diagnostic pipeline"
             description="The architecture separates data processing from AI reasoning so the model receives meaningful execution context rather than an unstructured wall of logs."
           />
@@ -410,10 +626,10 @@ export default function LoggerAICaseStudy() {
         </ScrollReveal>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="ai-rca" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="04"
+            number="05"
             title="AI-powered root-cause analysis"
             description="The important part of LoggerAI is not merely detecting an exception. It is using the surrounding execution context to explain what the failure means."
           />
@@ -471,10 +687,10 @@ export default function LoggerAICaseStudy() {
         </div>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="intelligence" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="05"
+            number="06"
             title="Framework-aware intelligence"
             description="LoggerAI is designed around framework execution data. That makes its diagnostic process more useful than treating every log message as an isolated text fragment."
           />
@@ -516,10 +732,10 @@ export default function LoggerAICaseStudy() {
         </div>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="spring" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="06"
+            number="07"
             title="Spring-based engineering layer"
             description="The application layer is implemented with Java and Spring Boot, providing the backend foundation around the log-processing and AI diagnostic workflow."
           />
@@ -547,12 +763,31 @@ export default function LoggerAICaseStudy() {
         </ScrollReveal>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section className="relative mx-auto max-w-7xl px-6 pb-20 lg:px-8">
+        <ScrollReveal>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ["01", "Diagnostic Layer", "Logs → structured execution context"],
+              ["02", "AI Reasoning", "Root cause → explanation → solution"],
+              ["03", "Framework Aware", "Failure analysis grounded in execution data"],
+              ["04", "Backend Platform", "Java · Spring Boot · processing services"],
+            ].map(([value, title, detail]) => (
+              <GlassCard key={title} className="p-6">
+                <div className="text-2xl font-semibold tracking-tight text-white">{value}</div>
+                <div className="mt-3 text-sm font-medium text-white/80">{title}</div>
+                <div className="mt-2 text-xs leading-5 text-white/40">{detail}</div>
+              </GlassCard>
+            ))}
+          </div>
+        </ScrollReveal>
+      </section>
+
+      <section id="impact" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="07"
-            title="Why it matters"
-            description="LoggerAI reduces the distance between a framework failure and an engineer's understanding of that failure."
+            number="08"
+            title="Engineering impact"
+            description="LoggerAI reduces the distance between a framework failure and an engineer’s understanding of what actually happened, why it happened and what to do next."
           />
         </ScrollReveal>
 
@@ -569,12 +804,12 @@ export default function LoggerAICaseStudy() {
         </div>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="decisions" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="08"
+            number="09"
             title="Engineering decisions"
-            description="The project is intentionally positioned as a diagnostic system rather than a generic chatbot."
+            description="The architecture treats LoggerAI as a diagnostic engineering system, not a generic chatbot layered on top of raw logs."
           />
         </ScrollReveal>
 
@@ -612,13 +847,13 @@ export default function LoggerAICaseStudy() {
                 Closing
               </div>
               <h2 className="mt-5 text-3xl font-semibold tracking-[-0.04em] sm:text-5xl">
-                LoggerAI turns framework noise into engineering insight.
+                LoggerAI turns execution noise into engineering intelligence.
               </h2>
               <p className="mt-6 max-w-3xl text-base leading-7 text-white/50">
-                Instead of making engineers manually search through framework
-                logs and reports to understand a failure, LoggerAI introduces
-                an AI-powered diagnostic layer that parses the available data,
-                identifies the likely root cause and provides a solution path.
+                Instead of making engineers manually search through framework logs and reports,
+                LoggerAI introduces an AI-powered diagnostic layer that parses the
+                available evidence, identifies the likely root cause and provides
+                an actionable solution path.
               </p>
 
               <div className="mt-9 flex flex-wrap gap-3">
@@ -638,12 +873,13 @@ export default function LoggerAICaseStudy() {
         </ScrollReveal>
 
         <div className="mt-8 text-center">
-          <Link
-            href="/"
+          <button
+            type="button"
+            onClick={handleBack}
             className="text-sm text-white/35 transition hover:text-white/70"
           >
             Back to portfolio →
-          </Link>
+          </button>
         </div>
       </section>
     </main>

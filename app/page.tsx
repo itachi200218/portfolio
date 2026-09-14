@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";// import { useState } from "react";
+import Link from "next/link";
 import LiquidGlass from "@/components/LiquidGlass";
+import TechnologyExplorer from "@/components/TechnologyExplorer";
 
 function getExperience(startDate: string) {
   const start = new Date(startDate);
@@ -95,7 +96,6 @@ function ScrollReveal({
 }
 
 export default function Home() {
-
   const [showScrollTop, setShowScrollTop] = useState(false);
 
 useEffect(() => {
@@ -106,6 +106,33 @@ useEffect(() => {
   window.addEventListener("scroll", handleScroll);
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
+
+useEffect(() => {
+  if (sessionStorage.getItem("portfolio-restore-scroll") !== "true") return;
+
+  const savedScrollY = Number(
+    sessionStorage.getItem("portfolio-return-scroll") ?? "0"
+  );
+
+  sessionStorage.removeItem("portfolio-restore-scroll");
+  sessionStorage.removeItem("portfolio-return-scroll");
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: savedScrollY,
+        behavior: "auto",
+      });
+    });
+  });
+}, []);
+
+const rememberHomeScroll = () => {
+  sessionStorage.setItem(
+    "portfolio-return-scroll",
+    String(window.scrollY)
+  );
+};
 
 const scrollToTop = () => {
   window.scrollTo({
@@ -129,6 +156,8 @@ const scrollToTop = () => {
 
       {/* DESKTOP NAV */}
       <div className="hidden items-center gap-8 text-sm text-zinc-400 md:flex">
+        <TechnologyExplorer onProjectNavigate={rememberHomeScroll} />
+
         <a
           href="#work"
           className="transition-all duration-300 hover:text-white"
@@ -244,6 +273,10 @@ const scrollToTop = () => {
         ${mobileMenuOpen ? "opacity-100" : "opacity-0"}
       `}
     >
+      <div className="px-5 py-4 text-[16px] text-zinc-300">
+        <TechnologyExplorer onProjectNavigate={rememberHomeScroll} />
+      </div>
+
       <a
         href="#work"
         onClick={() => setMobileMenuOpen(false)}
@@ -342,16 +375,6 @@ const scrollToTop = () => {
             </a>
           </div>
 
-          <div className="mt-14 flex flex-wrap gap-6 text-sm text-zinc-600">
-            <span>Java</span>
-            <span>Python</span>
-            <span>Spring Boot</span>
-            <span>FastAPI</span>
-            <span>React</span>
-            <span>AI</span>
-            <span>MongoDB</span>
-            <span>Redis</span>
-          </div>
         </div>
       </section>
 
@@ -396,6 +419,7 @@ const scrollToTop = () => {
 
     <ScrollReveal>
       <Link
+        onClick={rememberHomeScroll}
         href="/projects/jarvis"
         className="group block h-full"
       >
@@ -420,6 +444,7 @@ const scrollToTop = () => {
 
     <ScrollReveal delay={120}>
       <Link
+        onClick={rememberHomeScroll}
         href="/projects/allureiq"
         className="group block h-full"
       >
@@ -443,6 +468,7 @@ const scrollToTop = () => {
 
     <ScrollReveal delay={240}>
       <Link
+        onClick={rememberHomeScroll}
         href="/projects/food-finder"
         className="group block h-full"
       >
@@ -477,7 +503,8 @@ const scrollToTop = () => {
           <div className="grid gap-6 md:grid-cols-2">
             <ScrollReveal>
               <Link
-                href="/projects/sfcc-promotion"
+                onClick={rememberHomeScroll}
+        href="/projects/sfcc-promotion"
                 className="group block h-full"
               >
                 <Project
@@ -500,7 +527,8 @@ const scrollToTop = () => {
 
             <ScrollReveal delay={120}>
               <Link
-                href="/projects/loggerai"
+                onClick={rememberHomeScroll}
+        href="/projects/loggerai"
                 className="group block h-full"
               >
                 <Project
@@ -522,7 +550,8 @@ const scrollToTop = () => {
 
             <ScrollReveal delay={240}>
               <Link
-                href="/projects/km-portal"
+                onClick={rememberHomeScroll}
+        href="/projects/km-portal"
                 className="group block h-full"
               >
                 <Project
@@ -590,120 +619,267 @@ const scrollToTop = () => {
         </div>
       </section>
 
-      {/* Engineering Approach */}
-      <section className="mx-auto max-w-7xl px-6 py-32">
-        <ScrollReveal>
-          <SectionHeading number="02" title="Engineering Approach" />
-        </ScrollReveal>
-
-        <div className="mt-16 grid gap-px overflow-hidden rounded-3xl border border-zinc-900 bg-zinc-900 md:grid-cols-2">
-          <ScrollReveal><EngineeringBlock number="01" title="Backend Systems" description="Designing APIs, services, business logic, persistence layers, caching strategies, and reusable backend components." technologies="Java · Spring Boot · Python · FastAPI · Flask" /></ScrollReveal>
-          <ScrollReveal delay={100}><EngineeringBlock number="02" title="Platform Engineering" description="Building reusable frameworks and platforms that abstract complex workflows into configurable and maintainable systems." technologies="Automation · Frameworks · Business Rules · CI/CD" /></ScrollReveal>
-          <ScrollReveal delay={200}><EngineeringBlock number="03" title="AI Integration" description="Using AI where it provides practical engineering value, including intelligent commands, diagnostics, summaries, search fallback, and developer tooling." technologies="LLM · Gemini · AI Diagnostics · AI Test Intelligence" /></ScrollReveal>
-          <ScrollReveal delay={300}><EngineeringBlock number="04" title="Real-Time Systems" description="Building applications around live communication, synchronization, presence, notifications, and collaborative workflows." technologies="WebSockets · WebRTC · Real-Time Messaging" /></ScrollReveal>
-        </div>
-      </section>
-
       {/* Experience */}
-      <section id="experience" className="border-y border-zinc-900 bg-[#0c0c0c]">
-        <div className="mx-auto max-w-7xl px-6 py-32">
-          <SectionHeading number="03" title="Experience" />
+<section id="experience" className="border-y border-zinc-900 bg-[#0c0c0c]">
+  <div className="mx-auto max-w-7xl px-6 py-32">
 
-          <div className="mt-16 max-w-5xl">
-            <div className="border-l border-zinc-800 pl-8 md:pl-10">
-              <div className="flex flex-col justify-between gap-3 md:flex-row">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.2em] text-zinc-600">
-                    Cognizant
-                  </p>
+    <SectionHeading number="02" title="Experience" />
 
-                  <h3 className="mt-3 text-3xl font-semibold tracking-tight">
-                    Software Engineer
-                  </h3>
+    <div className="mt-10 max-w-5xl">
 
-                  <p className="mt-2 text-zinc-500">
-                    Client — Boots UK · E-commerce Platform
-                  </p>
-                </div>
+     
 
-<div className="md:text-right">
-  <p className="text-sm text-zinc-600">
-    May 2025 — Present
-  </p>
+      {/* Current Role */}
+      <div className="mt-16 border-l border-zinc-800 pl-8 md:pl-10">
 
-  <p className="mt-1 text-xs text-zinc-500">
-    {getExperience("2025-05-01")} experience
-  </p>
-</div>              </div>
+        <div className="flex flex-col justify-between gap-3 md:flex-row">
+          <div>
+            <p className="text-sm uppercase tracking-[0.2em] text-zinc-600">
+              Cognizant
+            </p>
 
-              <div className="mt-10 grid gap-5 md:grid-cols-2">
-                <ExperienceCard
-                  title="Promotion Validation"
-                  text="Built reusable validation capabilities for complex SFCC promotion scenarios with automated execution and expected-vs-actual validation."
-                />
+            <h3 className="mt-3 text-3xl font-semibold tracking-tight">
+              Software Engineer
+            </h3>
 
-                <ExperienceCard
-                  title="Framework Engineering"
-                  text="Worked across Java, Spring Boot, Cucumber, REST Assured, Selenium, TestNG, SQL, Allure, and CI/CD."
-                />
+            <p className="mt-2 text-zinc-500">
+              Client — Boots UK · E-commerce Platform
+            </p>
+          </div>
 
-                <ExperienceCard
-                  title="Platform Development"
-                  text="Contributed to configurable platform capabilities, backend services, PWA/frontend work, APIs, and enterprise commerce workflows."
-                />
+          <div className="md:text-right">
+            <p className="text-sm text-zinc-600">
+              May 2025 — Present
+            </p>
 
-                <ExperienceCard
-                  title="Measurable Impact"
-                  text="Promotion validation workflow reduced from roughly 1–1.5 hours to approximately 5–10 minutes."
-                />
-              </div>
-            </div>
+            <p className="mt-1 text-xs text-zinc-500">
+              {getExperience("2025-05-01")} experience
+            </p>
           </div>
         </div>
-      </section>
+  {/* Full Professional Experience */}
+      <Link
+        onClick={rememberHomeScroll}
+        href="/projects/experience"
+        className="group relative block w-full overflow-hidden rounded-3xl border border-white/[0.14] bg-white/[0.045] px-6 py-6 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.18)] transition-all duration-500 hover:-translate-y-1 hover:border-white/[0.28] hover:bg-white/[0.075] hover:shadow-[0_16px_60px_rgba(255,255,255,0.08)]"
+      >
+        {/* Liquid glass glow */}
+        <div className="pointer-events-none absolute -left-20 -top-20 h-40 w-40 rounded-full bg-cyan-400/[0.08] blur-3xl transition-all duration-700 group-hover:bg-cyan-400/[0.16]" />
 
-  {/* Certifications */}
+        <div className="pointer-events-none absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-blue-500/[0.07] blur-3xl transition-all duration-700 group-hover:bg-blue-500/[0.14]" />
+
+        {/* Glass highlight */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-60" />
+
+        <div className="relative flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.7)]" />
+
+              <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-cyan-300/80">
+                Professional Experience
+              </p>
+            </div>
+
+            <p className="mt-3 text-lg font-medium tracking-tight text-zinc-200 transition-colors duration-300 group-hover:text-white">
+              Explore my engineering work at Cognizant
+            </p>
+          </div>
+
+          <div className="ml-6 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.06] text-lg text-zinc-400 shadow-inner shadow-white/[0.04] transition-all duration-500 group-hover:translate-x-1 group-hover:border-cyan-300/30 group-hover:bg-cyan-300/[0.08] group-hover:text-white">
+            →
+          </div>
+        </div>
+      </Link>
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
+ 
+          <ExperienceCard
+            title="Promotion Validation"
+            text="Built reusable validation capabilities for complex SFCC promotion scenarios with automated execution and expected-vs-actual validation."
+          />
+
+          <ExperienceCard
+            title="Framework Engineering"
+            text="Worked across Java, Spring Boot, Cucumber, REST Assured, Selenium, TestNG, SQL, Allure, and CI/CD."
+          />
+
+          <ExperienceCard
+            title="Platform Development"
+            text="Contributed to configurable platform capabilities, backend services, PWA/frontend work, APIs, and enterprise commerce workflows."
+          />
+
+          <ExperienceCard
+            title="Measurable Impact"
+            text="Promotion validation workflow reduced from roughly 1–1.5 hours to approximately 5–10 minutes."
+          />
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{/* Engineering Approach */}
+<section className="mx-auto max-w-7xl px-6 pt-40 pb-32">
+
+  <ScrollReveal>
+    <SectionHeading number="03" title="Engineering Approach" />
+  </ScrollReveal>
+
+  <div className="mt-16 grid gap-px overflow-hidden rounded-3xl border border-zinc-900 bg-zinc-900 md:grid-cols-2">
+
+    <ScrollReveal>
+      <EngineeringBlock
+        number="01"
+        title="Backend Systems"
+        description="Designing APIs, services, business logic, persistence layers, caching strategies, and reusable backend components."
+        technologies="Java · Spring Boot · Python · FastAPI · Flask"
+      />
+    </ScrollReveal>
+
+    <ScrollReveal delay={100}>
+      <EngineeringBlock
+        number="02"
+        title="Platform Engineering"
+        description="Building reusable frameworks and platforms that abstract complex workflows into configurable and maintainable systems."
+        technologies="Automation · Frameworks · Business Rules · CI/CD"
+      />
+    </ScrollReveal>
+
+    <ScrollReveal delay={200}>
+      <EngineeringBlock
+        number="03"
+        title="AI Integration"
+        description="Using AI where it provides practical engineering value, including intelligent commands, diagnostics, summaries, search fallback, and developer tooling."
+        technologies="LLM · Gemini · AI Diagnostics · AI Test Intelligence"
+      />
+    </ScrollReveal>
+
+    <ScrollReveal delay={300}>
+      <EngineeringBlock
+        number="04"
+        title="Real-Time Systems"
+        description="Building applications around live communication, synchronization, presence, notifications, and collaborative workflows — connecting users and services through responsive, real-time interactions."
+        technologies="WebSockets · WebRTC · Real-Time Messaging"
+      />
+    </ScrollReveal>
+
+  </div>
+
+</section>
+
+{/* Certifications */}
 <section id="certifications" className="mx-auto max-w-7xl px-6 py-32">
+
   <ScrollReveal>
     <SectionHeading number="04" title="Certifications" />
   </ScrollReveal>
 
-  <div className="mt-16 grid gap-6 md:grid-cols-2">
-    <ScrollReveal><CertificationCard issuer="Oracle" title="Oracle Cloud Infrastructure" subtitle="Certified Architect Associate" score="90%" date="September 2026" featured image="/certifications/oracle.jpg" /></ScrollReveal>
-    <ScrollReveal delay={120}><CertificationCard issuer="Professional Development" title="Software Development & Cloud" subtitle="Microsoft Certification" score="" date="" image="/certifications/SE1.jpg" /></ScrollReveal>
-    <ScrollReveal delay={240}><CertificationCard issuer="Docker" title="Docker Certification" subtitle="Containerization & Development" score="" date="" image="/certifications/docker.jpg" /></ScrollReveal>
-    <ScrollReveal delay={360}><CertificationCard issuer="HackerRank" title="Java · Python · MySQL · REST API" subtitle="Technical Certifications" score="" date="" images={["/certifications/java.jpg","/certifications/PY.jpg","/certifications/SQL.jpg","/certifications/RESTAPI.jpg","/certifications/SE.jpg","/certifications/DSA.jpg"]} /></ScrollReveal>
+<div className="mt-16 grid gap-6 md:grid-cols-2">
+    <ScrollReveal>
+      <CertificationCard
+        issuer="Oracle"
+        title="Oracle Cloud Infrastructure"
+        subtitle="Certified Architect Associate"
+        score="90%"
+        date="September 2026"
+        featured
+        image="/certifications/oracle.jpg"
+      />
+    </ScrollReveal>
+
+    <ScrollReveal delay={120}>
+      <CertificationCard
+        issuer="Professional Development"
+        title="Software Development & Cloud"
+        subtitle="Microsoft Certification"
+        score=""
+        date=""
+        image="/certifications/SE1.jpg"
+      />
+    </ScrollReveal>
+
+    <ScrollReveal delay={240}>
+      <CertificationCard
+        issuer="Docker"
+        title="Docker Certification"
+        subtitle="Containerization & Development"
+        score=""
+        date=""
+        image="/certifications/docker.jpg"
+      />
+    </ScrollReveal>
+
+    <ScrollReveal delay={360}>
+      <CertificationCard
+        issuer="HackerRank"
+        title="Java · Python · MySQL · REST API"
+        subtitle="Technical Certifications"
+        score=""
+        date=""
+        images={[
+          "/certifications/java.jpg",
+          "/certifications/PY.jpg",
+          "/certifications/SQL.jpg",
+          "/certifications/RESTAPI.jpg",
+          "/certifications/SE.jpg",
+          "/certifications/DSA.jpg",
+        ]}
+      />
+    </ScrollReveal>
+
   </div>
 </section>
+{/* Recognition */}
+<section id="recognition" className="border-y border-zinc-900 bg-[#0c0c0c]">
+  <div className="mx-auto max-w-7xl px-6 py-32">
 
-      {/* Recognition */}
-      <section id="recognition" className="border-y border-zinc-900 bg-[#0c0c0c]">
-        <div className="mx-auto max-w-7xl px-6 py-32">
-          <ScrollReveal>
-            <SectionHeading number="05" title="Recognition" />
-          </ScrollReveal>
+    <ScrollReveal>
+      <SectionHeading number="05" title="Recognition" />
+    </ScrollReveal>
 
-          <div className="mt-16 grid gap-6 md:grid-cols-2">
-            <ScrollReveal>
-              <RecognitionFlipCard
-                title="The Energy and Optimism"
-                organization="Cognizant"
-                description="Recognition for the SFCC Promotion Validation Tool and its impact on reducing validation effort."
-                image="/certifications/certificate.jpg"
-              />
-            </ScrollReveal>
+<div className="mt-16 grid gap-6 md:grid-cols-2">
+  <ScrollReveal delay={450}>
+        <RecognitionFlipCard
+          title="Change Champion"
+          organization="Cognizant"
+          description="Recognition for developing the SFCC Promotion Loyalty Points Validation Tool and driving a significant reduction in validation time from 1–1.5 hours to approximately 5 minutes."
+          image="/certifications/1122.png"
+        />
+      </ScrollReveal>
 
-            <ScrollReveal delay={150}>
-              <RecognitionFlipCard
-                title="Trendsetter Award"
-                organization="Cognizant"
-                description="Recognition for valuable contribution and outstanding performance."
-                image="/certifications/Trendsetter.jpg"
-              />
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
+      <ScrollReveal>
+        <RecognitionFlipCard
+          title="The Energy and Optimism"
+          organization="Cognizant"
+          description="Recognition for the SFCC Promotion Validation Tool and its impact on reducing validation effort."
+          image="/certifications/111c.png"
+        />
+      </ScrollReveal>
+
+      <ScrollReveal delay={150}>
+        <RecognitionFlipCard
+          title="Trendsetter Award"
+          organization="Cognizant"
+          description="Recognition for valuable contribution and outstanding performance."
+          image="/certifications/Trendsetter.jpg"
+        />
+      </ScrollReveal>
+
+      <ScrollReveal delay={300}>
+        <RecognitionFlipCard
+          title="Leadership Appreciation"
+          organization="Cognizant"
+          description="Recognized by leadership for proactively learning and implementing new technologies, voluntarily taking ownership of a task, and successfully delivering it."
+          image="/certifications/2002.png"
+        />
+      </ScrollReveal>
+
+
+    </div>
+  </div>
+</section>
 
       {/* About */}
       <section id="about" className="mx-auto max-w-7xl px-6 py-32">
@@ -1058,7 +1234,7 @@ const closeCertificate = () => {
     transition-transform duration-700
     [transform-style:preserve-3d]
     ${flipped ? "[transform:rotateY(180deg)]" : ""}
-    md:group-hover/card:[transform:rotateY(180deg)]
+lg:group-hover/card:[transform:rotateY(180deg)]
   `}
 >
               {/* FRONT */}
@@ -1199,18 +1375,18 @@ const closeCertificate = () => {
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/80 p-6 backdrop-blur-md animate-[fadeIn_300ms_ease-out]"
+            className="fixed inset-0 z-[10001] flex items-center justify-center overflow-y-auto md:items-start bg-black/80 p-3 backdrop-blur-md animate-[fadeIn_300ms_ease-out] sm:p-4 md:px-4 md:pb-4 md:pt-6"
             onClick={closeCertificate}
           >
             <div
-              className="relative max-h-[90vh] max-w-[95vw] animate-[certificatePop_500ms_cubic-bezier(0.16,1,0.3,1)]"
+              className="relative flex max-h-[calc(100dvh-1.5rem)] max-w-[calc(100vw-1.5rem)] items-center justify-center animate-[certificatePop_500ms_cubic-bezier(0.16,1,0.3,1)] sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[calc(100vw-2rem)]"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 type="button"
                 onClick={closeCertificate}
                 aria-label="Close certificate viewer"
-                className="absolute -right-3 -top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/80 text-xl text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:bg-white/20"
+                className="absolute -right-2 -top-2 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/80 text-xl text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:bg-white/20 sm:-right-3 sm:-top-3 sm:h-10 sm:w-10"
               >
                 ×
               </button>
@@ -1218,7 +1394,7 @@ const closeCertificate = () => {
               <img
                 src={selectedImage}
                 alt={`${title} certificate`}
-                className="max-h-[90vh] max-w-[95vw] rounded-xl object-contain shadow-[0_25px_100px_rgba(0,0,0,0.7)]"
+                className="block max-h-[calc(100dvh-1.75rem)] max-w-[calc(100vw-1.5rem)] w-auto h-auto rounded-xl object-contain shadow-[0_25px_100px_rgba(0,0,0,0.7)] sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[calc(100vw-2rem)]"
               />
             </div>
           </div>,
@@ -1336,7 +1512,7 @@ function RecognitionFlipCard({
     <>
       <div className="group/recognition h-[300px] [perspective:1200px]">
         <div
-          className={`relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] md:group-hover/recognition:[transform:rotateY(180deg)] ${
+          className={`relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] lg:group-hover/recognition:[transform:rotateY(180deg)] ${
             flipped ? "[transform:rotateY(180deg)]" : ""
           }`}
         >
@@ -1411,18 +1587,18 @@ function RecognitionFlipCard({
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/80 p-6 backdrop-blur-md animate-[fadeIn_300ms_ease-out]"
+            className="fixed inset-0 z-[10001] flex items-center justify-center overflow-y-auto md:items-start bg-black/80 p-3 backdrop-blur-md animate-[fadeIn_300ms_ease-out] sm:p-4 md:px-4 md:pb-4 md:pt-6"
             onClick={closeRecognition}
           >
             <div
-              className="relative max-h-[90vh] max-w-[95vw] animate-[certificatePop_500ms_cubic-bezier(0.16,1,0.3,1)]"
+              className="relative flex max-h-[calc(100dvh-1.5rem)] max-w-[calc(100vw-1.5rem)] items-center justify-center animate-[certificatePop_500ms_cubic-bezier(0.16,1,0.3,1)] sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[calc(100vw-2rem)]"
               onClick={(event) => event.stopPropagation()}
             >
               <button
                 type="button"
                 onClick={closeRecognition}
                 aria-label="Close recognition viewer"
-                className="absolute -right-3 -top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/80 text-xl text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:bg-white/20"
+                className="absolute -right-2 -top-2 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/80 text-xl text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:bg-white/20 sm:-right-3 sm:-top-3 sm:h-10 sm:w-10"
               >
                 ×
               </button>
@@ -1430,7 +1606,7 @@ function RecognitionFlipCard({
               <img
                 src={image}
                 alt={`${title} recognition certificate enlarged`}
-                className="max-h-[90vh] max-w-[95vw] rounded-xl object-contain shadow-[0_25px_100px_rgba(0,0,0,0.7)]"
+                className="block max-h-[calc(100dvh-1.75rem)] max-w-[calc(100vw-1.5rem)] w-auto h-auto rounded-xl object-contain shadow-[0_25px_100px_rgba(0,0,0,0.7)] sm:max-h-[calc(100dvh-2.5rem)] sm:max-w-[calc(100vw-2rem)]"
               />
             </div>
           </div>,

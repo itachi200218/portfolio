@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 function ScrollReveal({
@@ -183,7 +184,66 @@ function Metric({
   );
 }
 
+const sectionTabs = [
+  ["01", "Problem", "problem"],
+  ["02", "The Problem", "the-problem"],
+  ["03", "Platform", "platform"],
+  ["04", "Workflow", "workflow"],
+  ["05", "Scoring", "scoring"],
+  ["06", "Tracking", "tracking"],
+  ["07", "Duplicates", "duplicates"],
+  ["08", "Architecture", "architecture"],
+  ["09", "Decisions", "decisions"],
+  ["10", "Impact", "impact"],
+] as const;
+
 export default function KMPortalCaseStudy() {
+  const router = useRouter();
+  const [mobileSectionsOpen, setMobileSectionsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("top");
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  useEffect(() => {
+    const ids = ["top", ...sectionTabs.map(([, , id]) => id)];
+    const elements = ids
+      .map((id) => document.getElementById(id))
+      .filter((element): element is HTMLElement => Boolean(element));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visible?.target instanceof HTMLElement) {
+          setActiveSection(visible.target.id);
+        }
+      },
+      {
+        threshold: [0.1, 0.25, 0.5],
+        rootMargin: "-18% 0px -65% 0px",
+      }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setMobileSectionsOpen(false);
+  };
+
+  const activeSectionLabel =
+    activeSection === "top"
+      ? "Home"
+      : sectionTabs.find(([, , id]) => id === activeSection)?.[1] ?? "Sections";
+
   return (
     <main className="min-h-screen overflow-x-clip bg-[#050507] text-white selection:bg-cyan-300/20 selection:text-white">
       {/* Ambient glass lighting */}
@@ -196,12 +256,16 @@ export default function KMPortalCaseStudy() {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 border-b border-white/[0.07] bg-black/30 backdrop-blur-2xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
-          <Link
-            href="/"
-            className="text-sm font-medium tracking-tight text-white/70 transition hover:text-white"
-          >
-            ← Portfolio
-          </Link>
+         <button
+  type="button"
+  onClick={handleBack}
+  className="group flex items-center gap-3 text-sm text-zinc-400 transition hover:text-white"
+>
+  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.05] transition group-hover:bg-white/[0.1]">
+    ←
+  </span>
+  Back to Portfolio
+</button>
 
           <div className="hidden text-[11px] uppercase tracking-[0.25em] text-white/30 sm:block">
             KM Portal · Case Study
@@ -213,13 +277,124 @@ export default function KMPortalCaseStudy() {
         </div>
       </nav>
 
+      {/* SECTION NAVIGATION */}
+      <div className="sticky top-[65px] z-40 border-b border-white/[0.06] bg-black/45 backdrop-blur-2xl backdrop-saturate-[180%]">
+        {/* Desktop: full section tabs */}
+        <div className="mx-auto hidden max-w-7xl overflow-x-auto px-4 py-2.5 scrollbar-hide lg:block lg:px-8">
+          <div className="flex min-w-max items-center gap-1">
+            <button
+              type="button"
+              onClick={() => scrollToSection("top")}
+              className={`rounded-full px-3 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition ${
+                activeSection === "top"
+                  ? "bg-cyan-400/[0.08] text-cyan-300"
+                  : "text-zinc-500 hover:bg-white/[0.07] hover:text-white"
+              }`}
+            >
+              Home
+            </button>
+
+            {sectionTabs.map(([number, label, id]) => (
+              <button
+                type="button"
+                key={id}
+                onClick={() => scrollToSection(id)}
+                className={`whitespace-nowrap rounded-full px-3 py-2 text-[11px] transition ${
+                  activeSection === id
+                    ? "bg-white/[0.07] text-white"
+                    : "text-zinc-500 hover:bg-white/[0.07] hover:text-white"
+                }`}
+              >
+                <span
+                  className={`mr-1.5 ${
+                    activeSection === id ? "text-cyan-300" : "text-zinc-700"
+                  }`}
+                >
+                  {number}
+                </span>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Phone + tablet: compact section picker */}
+        <div className="relative mx-auto lg:hidden">
+          <button
+            type="button"
+            aria-expanded={mobileSectionsOpen}
+            onClick={() => setMobileSectionsOpen((open) => !open)}
+            className="flex w-full items-center justify-between px-5 py-3.5 text-left"
+          >
+            <span className="flex items-center gap-3">
+              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-cyan-400">
+                SECTION
+              </span>
+              <span className="h-1 w-1 rounded-full bg-white/20" />
+              <span className="text-sm font-medium text-zinc-200">
+                {activeSectionLabel}
+              </span>
+            </span>
+
+            <span
+              className={`flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-xs text-zinc-400 transition-transform duration-300 ${
+                mobileSectionsOpen ? "rotate-180" : ""
+              }`}
+            >
+              ↓
+            </span>
+          </button>
+
+          {mobileSectionsOpen && (
+            <div className="absolute left-3 right-3 top-full mt-2 rounded-2xl border border-white/[0.10] bg-[#080b16]/95 p-2 shadow-[0_20px_70px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+              <div className="grid grid-cols-2 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => scrollToSection("top")}
+                  className={`rounded-xl px-3 py-3 text-left text-xs transition ${
+                    activeSection === "top"
+                      ? "bg-cyan-400/[0.10] text-cyan-300"
+                      : "text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                  }`}
+                >
+                  <span className="mr-2 text-[10px] text-zinc-600">00</span>
+                  Home
+                </button>
+
+                {sectionTabs.map(([number, label, id]) => (
+                  <button
+                    type="button"
+                    key={id}
+                    onClick={() => scrollToSection(id)}
+                    className={`rounded-xl px-3 py-3 text-left text-xs transition ${
+                      activeSection === id
+                        ? "bg-cyan-400/[0.10] text-cyan-300"
+                        : "text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                    }`}
+                  >
+                    <span
+                      className={`mr-2 text-[10px] ${
+                        activeSection === id ? "text-cyan-300" : "text-zinc-600"
+                      }`}
+                    >
+                      {number}
+                    </span>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Hero */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 pt-28 lg:px-8 lg:pt-36">
+      <section id="top" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 pt-28 lg:px-8 lg:pt-36">
         <ScrollReveal>
           <div className="max-w-5xl">
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.04] px-4 py-2 text-xs text-cyan-200/70">
               <span className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_14px_rgba(103,232,249,.8)]" />
-              Knowledge & Learning Platform
+              INTERNAL KNOWLEDGE ENGINEERING PLATFORM
             </div>
 
             <h1 className="text-6xl font-semibold tracking-[-0.065em] sm:text-7xl lg:text-[92px] lg:leading-[0.94]">
@@ -227,9 +402,8 @@ export default function KMPortalCaseStudy() {
             </h1>
 
             <p className="mt-8 max-w-3xl text-xl leading-8 tracking-[-0.02em] text-white/50 sm:text-2xl">
-              An internal knowledge and learning platform designed to turn
-              structured learning workflows into measurable, trackable
-              engineering development.
+              An internal platform that turns knowledge and learning workflows into
+              structured, measurable and trackable user experiences.
             </p>
 
             <div className="mt-10 flex flex-wrap gap-3">
@@ -298,11 +472,52 @@ export default function KMPortalCaseStudy() {
         </ScrollReveal>
       </section>
 
-      {/* Problem */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      {/* Problem & Approach */}
+      <section id="problem" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
             number="01"
+            title="The engineering problem"
+            description="Internal knowledge systems become difficult to scale when content, learning activity, scoring and user data are handled through disconnected workflows."
+          />
+        </ScrollReveal>
+
+        <div className="grid gap-5 lg:grid-cols-2">
+          <GlassCard className="p-7 sm:p-9">
+            <div className="text-xs uppercase tracking-[0.22em] text-white/25">
+              Problem
+            </div>
+            <h3 className="mt-5 text-2xl font-semibold tracking-tight">
+              Knowledge alone is not a learning system.
+            </h3>
+            <p className="mt-4 text-sm leading-7 text-white/45">
+              Making internal material available is only the first step. The
+              platform also needs structured workflows, measurable outcomes,
+              user-level visibility and reliable underlying records.
+            </p>
+          </GlassCard>
+
+          <GlassCard className="border-cyan-300/10 p-7 sm:p-9">
+            <div className="text-xs uppercase tracking-[0.22em] text-cyan-300/60">
+              Approach
+            </div>
+            <h3 className="mt-5 text-2xl font-semibold tracking-tight">
+              Build one platform around the complete learning lifecycle.
+            </h3>
+            <p className="mt-4 text-sm leading-7 text-white/45">
+              KM Portal connects knowledge delivery, learning participation,
+              scoring, user tracking and duplicate prevention so the resulting
+              data can support a more reliable view of learning progress.
+            </p>
+          </GlassCard>
+        </div>
+      </section>
+
+      {/* Problem */}
+      <section id="the-problem" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+        <ScrollReveal>
+          <SectionHeading
+            number="02"
             title="The problem"
             description="Internal learning becomes difficult to manage when knowledge, participation and progress are spread across disconnected workflows."
           />
@@ -338,11 +553,31 @@ export default function KMPortalCaseStudy() {
         </div>
       </section>
 
+      {/* Engineering Highlights */}
+      <section className="relative mx-auto max-w-7xl px-6 pb-20 lg:px-8">
+        <ScrollReveal>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ["01", "Knowledge Layer", "Structured internal learning content"],
+              ["02", "Workflow Engine", "Defined learning and participation flow"],
+              ["03", "Measurement", "Scoring and user-level activity"],
+              ["04", "Data Integrity", "Duplicate-aware records and tracking"],
+            ].map(([value, title, detail]) => (
+              <GlassCard key={title} className="p-6">
+                <div className="text-2xl font-semibold tracking-tight text-white">{value}</div>
+                <div className="mt-3 text-sm font-medium text-white/80">{title}</div>
+                <div className="mt-2 text-xs leading-5 text-white/40">{detail}</div>
+              </GlassCard>
+            ))}
+          </div>
+        </ScrollReveal>
+      </section>
+
       {/* Platform */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="platform" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="02"
+            number="03"
             title="Platform at a glance"
             description="The portal connects knowledge delivery, learning workflows, scoring and user-level visibility into one internal platform."
           />
@@ -383,10 +618,10 @@ export default function KMPortalCaseStudy() {
       </section>
 
       {/* Workflow */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="workflow" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="03"
+            number="04"
             title="Learning workflow"
             description="The core experience is a structured progression from knowledge discovery to participation and measurable outcome."
           />
@@ -455,10 +690,10 @@ export default function KMPortalCaseStudy() {
       </section>
 
       {/* Scoring */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="scoring" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="04"
+            number="05"
             title="Scoring & measurement"
             description="Learning becomes more useful to an organization when participation can be represented through measurable outcomes."
           />
@@ -511,10 +746,10 @@ export default function KMPortalCaseStudy() {
       </section>
 
       {/* Tracking */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="tracking" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="05"
+            number="06"
             title="User tracking"
             description="The platform maintains visibility around user participation so learning activity can be understood at an individual level."
           />
@@ -565,10 +800,10 @@ export default function KMPortalCaseStudy() {
       </section>
 
       {/* Duplicate prevention */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="duplicates" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="06"
+            number="07"
             title="Duplicate-prevention mechanisms"
             description="Data quality is part of the platform design. Preventing duplicate entries protects the reliability of user tracking and learning results."
           />
@@ -614,12 +849,12 @@ export default function KMPortalCaseStudy() {
       </section>
 
       {/* Architecture */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="architecture" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="07"
+            number="08"
             title="Platform architecture"
-            description="The system can be viewed as a set of connected responsibilities: knowledge delivery, learning workflows, measurement and data integrity."
+            description="The system is organized around connected platform responsibilities: knowledge delivery, application workflows, measurement and data integrity."
           />
         </ScrollReveal>
 
@@ -683,12 +918,12 @@ export default function KMPortalCaseStudy() {
       </section>
 
       {/* Engineering principles */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="decisions" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="08"
+            number="09"
             title="Engineering decisions"
-            description="The platform is centered around a few simple principles that make an internal learning system more useful and maintainable."
+            description="The platform is centered around a few engineering principles that keep the learning experience structured, measurable and maintainable."
           />
         </ScrollReveal>
 
@@ -721,10 +956,10 @@ export default function KMPortalCaseStudy() {
       </section>
 
       {/* Impact */}
-      <section className="relative mx-auto max-w-7xl px-6 pb-28 lg:px-8">
+      <section id="impact" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            number="09"
+            number="10"
             title="Engineering impact"
             description="KM Portal brings learning management, measurement and data quality into one internal platform experience."
           />
@@ -761,10 +996,9 @@ export default function KMPortalCaseStudy() {
               </h2>
 
               <p className="mt-6 max-w-3xl text-base leading-7 text-white/45">
-                By bringing structured learning workflows, scoring, user
-                tracking and duplicate-prevention mechanisms together, KM
-                Portal provides an organized foundation for internal knowledge
-                and learning management.
+                By bringing structured learning workflows, scoring, user tracking and
+                duplicate-prevention mechanisms together, KM Portal provides a
+                reusable foundation for internal knowledge and learning management.
               </p>
 
               <div className="mt-9 flex flex-wrap gap-3">
@@ -789,12 +1023,13 @@ export default function KMPortalCaseStudy() {
         </ScrollReveal>
 
         <div className="mt-8 text-center">
-          <Link
-            href="/"
+          <button
+            type="button"
+            onClick={handleBack}
             className="text-sm text-white/30 transition hover:text-white/70"
           >
             Back to portfolio →
-          </Link>
+          </button>
         </div>
       </section>
     </main>
