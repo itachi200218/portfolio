@@ -216,6 +216,15 @@ const scrollToTop = () => {
                   Open
                 </a>
 
+                <a
+                  href="/Adepu_chaitanya_Software_Engineering%20.pdf"
+                  download="Adepu_Chaitanya_Resume.pdf"
+                  aria-label="Download resume PDF"
+                  className="rounded-full border border-white/[0.08] px-2.5 py-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-zinc-400 transition-colors duration-300 hover:bg-white/[0.05] hover:text-white sm:px-3 sm:text-[10px] sm:tracking-[0.14em]"
+                >
+                  Download
+                </a>
+
                 <button
                   type="button"
                   onClick={() => setResumeOpen(false)}
