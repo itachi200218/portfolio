@@ -359,15 +359,15 @@ export default function ProfessionalEngineeringExperience() {
       (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
 
-        if (visible?.target instanceof HTMLElement) {
-          setActiveSection(visible.target.id);
+        if (visible[0]?.target?.id) {
+          setActiveSection(visible[0].target.id);
         }
       },
       {
-        threshold: [0.1, 0.25, 0.5],
-        rootMargin: "-18% 0px -65% 0px",
+        rootMargin: "-110px 0px -55% 0px",
+        threshold: [0.05, 0.15, 0.3, 0.5],
       }
     );
 
@@ -376,9 +376,19 @@ export default function ProfessionalEngineeringExperience() {
   }, []);
 
   const scrollToSection = (id: string) => {
-    document
-      .getElementById(id)
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const element = document.getElementById(id);
+    if (!element) return;
+
+    // Keep the section heading visible below both sticky navigation bars.
+    const headerOffset = window.innerWidth >= 1024 ? 126 : 118;
+    const targetY =
+      element.getBoundingClientRect().top + window.scrollY - headerOffset;
+
+    window.scrollTo({
+      top: Math.max(0, targetY),
+      behavior: "smooth",
+    });
+
     setMobileSectionsOpen(false);
   };
 
@@ -420,113 +430,89 @@ export default function ProfessionalEngineeringExperience() {
       </nav>
 
       {/* SECTION NAVIGATION */}
-      <div className="sticky top-[69px] z-40 border-b border-white/[0.06] bg-black/45 backdrop-blur-2xl backdrop-saturate-[180%]">
-        {/* Desktop: full section tabs */}
-        <div className="mx-auto hidden max-w-7xl overflow-x-auto px-4 py-2.5 scrollbar-hide lg:block lg:px-10">
-          <div className="flex min-w-max items-center gap-1">
+      <div className="sticky top-[69px] z-40 border-b border-white/[0.06] bg-black/25 backdrop-blur-2xl backdrop-saturate-[180%]">
+        <div className="mx-auto max-w-7xl px-1 lg:px-6">
+          <div className="hidden h-12 items-center gap-1 overflow-x-auto [scrollbar-width:none] lg:flex [&::-webkit-scrollbar]:hidden">
             <button
               type="button"
               onClick={() => scrollToSection("top")}
-              className={`rounded-full px-3 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition ${
+              className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] transition ${
                 activeSection === "top"
-                  ? "bg-cyan-400/[0.08] text-cyan-300"
-                  : "text-zinc-500 hover:bg-white/[0.07] hover:text-white"
+                  ? "bg-cyan-400/10 text-cyan-300"
+                  : "text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
               }`}
             >
               Home
             </button>
-
-            {sectionTabs.map(([number, label, id]) => (
+            {sectionTabs.map(([number, title, id]) => (
               <button
-                type="button"
                 key={id}
+                type="button"
                 onClick={() => scrollToSection(id)}
-                className={`whitespace-nowrap rounded-full px-3 py-2 text-[11px] transition ${
+                className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] transition ${
                   activeSection === id
-                    ? "bg-white/[0.07] text-white"
-                    : "text-zinc-500 hover:bg-white/[0.07] hover:text-white"
+                    ? "bg-cyan-400/10 text-cyan-300"
+                    : "text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
                 }`}
               >
-                <span
-                  className={`mr-1.5 ${
-                    activeSection === id ? "text-cyan-300" : "text-zinc-700"
-                  }`}
-                >
-                  {number}
-                </span>
-                {label}
+                {number} · {title}
               </button>
             ))}
           </div>
-        </div>
 
-        {/* Phone + tablet: compact section picker */}
-        <div className="relative mx-auto lg:hidden">
-          <button
-            type="button"
-            aria-expanded={mobileSectionsOpen}
-            onClick={() => setMobileSectionsOpen((open) => !open)}
-            className="flex w-full items-center justify-between px-5 py-3.5 text-left"
-          >
-            <span className="flex items-center gap-3">
-              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-cyan-400">
-                SECTION
-              </span>
-              <span className="h-1 w-1 rounded-full bg-white/20" />
-              <span className="text-sm font-medium text-zinc-200">
-                {activeSectionLabel}
-              </span>
-            </span>
-
-            <span
-              className={`flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-xs text-zinc-400 transition-transform duration-300 ${
-                mobileSectionsOpen ? "rotate-180" : ""
-              }`}
+          <div className="relative lg:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileSectionsOpen((open) => !open)}
+              className="flex h-12 w-full items-center justify-between text-left"
             >
-              ↓
-            </span>
-          </button>
+              <span className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+                Section
+              </span>
+              <span className="flex items-center gap-3 text-xs text-zinc-300">
+                {activeSection === "top"
+                  ? "Home"
+                  : sectionTabs.find(([, , id]) => id === activeSection)?.[1] ?? "Overview"}
+                <span className={`text-zinc-500 transition-transform ${mobileSectionsOpen ? "rotate-180" : ""}`}>
+                  ↓
+                </span>
+              </span>
+            </button>
 
-          {mobileSectionsOpen && (
-            <div className="absolute left-3 right-3 top-full mt-2 rounded-2xl border border-white/[0.10] bg-[#080b16]/95 p-2 shadow-[0_20px_70px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
-              <div className="grid grid-cols-2 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => scrollToSection("top")}
-                  className={`rounded-xl px-3 py-3 text-left text-xs transition ${
-                    activeSection === "top"
-                      ? "bg-cyan-400/[0.10] text-cyan-300"
-                      : "text-zinc-400 hover:bg-white/[0.06] hover:text-white"
-                  }`}
-                >
-                  <span className="mr-2 text-[10px] text-zinc-600">00</span>
-                  Home
-                </button>
-
-                {sectionTabs.map(([number, label, id]) => (
+            {mobileSectionsOpen && (
+              <div className="absolute left-0 right-0 top-full border-x border-b border-white/[0.08] bg-[#080a12]/95 p-3 shadow-2xl backdrop-blur-2xl">
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    key={id}
-                    onClick={() => scrollToSection(id)}
-                    className={`rounded-xl px-3 py-3 text-left text-xs transition ${
-                      activeSection === id
-                        ? "bg-cyan-400/[0.10] text-cyan-300"
-                        : "text-zinc-400 hover:bg-white/[0.06] hover:text-white"
+                    onClick={() => scrollToSection("top")}
+                    className={`rounded-2xl border px-3 py-3 text-left text-xs transition ${
+                      activeSection === "top"
+                        ? "border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300"
+                        : "border-white/[0.07] bg-white/[0.025] text-zinc-400 hover:bg-white/[0.05]"
                     }`}
                   >
-                    <span
-                      className={`mr-2 text-[10px] ${
-                        activeSection === id ? "text-cyan-300" : "text-zinc-600"
+                    <span className="block text-[10px] text-zinc-600">—</span>
+                    Home
+                  </button>
+                  {sectionTabs.map(([number, title, id]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => scrollToSection(id)}
+                      className={`rounded-2xl border px-3 py-3 text-left text-xs transition ${
+                        activeSection === id
+                          ? "border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300"
+                          : "border-white/[0.07] bg-white/[0.025] text-zinc-400 hover:bg-white/[0.05]"
                       }`}
                     >
-                      {number}
-                    </span>
-                    {label}
-                  </button>
-                ))}
+                      <span className="block text-[10px] text-zinc-600">{number}</span>
+                      {title}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
