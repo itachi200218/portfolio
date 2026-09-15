@@ -48,6 +48,8 @@ const PORTFOLIO_PROJECT_GROUPS = {
   ],
 } as const;
 
+const TECHNOLOGY_EXPLORER_SYNC_EVENT = "portfolio-technology-explorer-sync";
+
 const TECHNOLOGIES: Technology[] = [
   {
     name: "Java",
@@ -466,12 +468,29 @@ export default function TechnologyExplorer({
     setQuery("");
     setSelected(null);
     setProjectGroup("all");
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent(TECHNOLOGY_EXPLORER_SYNC_EVENT, {
+          detail: { action: "close" },
+        })
+      );
+    }
   };
 
   const dismissRestore = () => {
     if (typeof window !== "undefined") {
       sessionStorage.setItem("portfolio-restore-dismissed", "true");
       sessionStorage.removeItem("portfolio-return-technology");
+
+      // Home renders the explorer in more than one responsive location.
+      // Clear the state in every mounted instance so a hidden/underlying
+      // explorer cannot reveal the old restored technology after close.
+      window.dispatchEvent(
+        new CustomEvent(TECHNOLOGY_EXPLORER_SYNC_EVENT, {
+          detail: { action: "clear-restore" },
+        })
+      );
     }
   };
 
@@ -483,6 +502,42 @@ export default function TechnologyExplorer({
     onProjectNavigate?.(restoreValue);
     close();
   };
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleSync = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        action: "clear-restore" | "close";
+      }>;
+
+      if (customEvent.detail?.action === "clear-restore") {
+        setQuery("");
+        setSelected(null);
+        setProjectGroup("all");
+        return;
+      }
+
+      if (customEvent.detail?.action === "close") {
+        setOpen(false);
+        setQuery("");
+        setSelected(null);
+        setProjectGroup("all");
+      }
+    };
+
+    window.addEventListener(
+      TECHNOLOGY_EXPLORER_SYNC_EVENT,
+      handleSync
+    );
+
+    return () => {
+      window.removeEventListener(
+        TECHNOLOGY_EXPLORER_SYNC_EVENT,
+        handleSync
+      );
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) return;
