@@ -623,6 +623,7 @@ export default function TechnologyExplorer({
                         setProjectGroup("all");
                         setQuery(event.target.value);
                         setSelected(null);
+                        sessionStorage.removeItem("portfolio-return-technology");
                       }}
                       onKeyDown={(event) => {
                         if (event.key === "Escape") close();
@@ -637,8 +638,9 @@ export default function TechnologyExplorer({
                         type="button"
                         onClick={() => {
                           setProjectGroup("all");
-                          setQuery("");
+                            setQuery("");
                           setSelected(null);
+                          sessionStorage.removeItem("portfolio-return-technology");
                         }}
                         aria-label="Clear technology search"
                         className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-zinc-500 transition hover:bg-white/[0.08] hover:text-white"
@@ -666,6 +668,11 @@ export default function TechnologyExplorer({
                             setProjectGroup(filter.value);
                             setQuery("");
                             setSelected(null);
+
+                            if (filter.value === "all") {
+                              sessionStorage.removeItem("portfolio-return-technology");
+                            } else {
+                                                  }
                           }}
                           className={`rounded-full border px-3 py-1.5 text-[10px] uppercase tracking-[0.14em] transition ${
                             active
