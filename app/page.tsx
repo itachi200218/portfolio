@@ -227,11 +227,13 @@ const scrollToTop = () => {
               </div>
             </div>
 
-            <iframe
-              src="/Adepu_chaitanya_Software_Engineering%20.pdf#view=FitH"
-              title="Chaitanya Adepu Resume"
-              className="min-h-0 flex-1 w-full border-0 bg-white"
-            />
+            <div className="min-h-0 flex-1 overflow-auto bg-white sm:overflow-hidden">
+              <iframe
+                src="/Adepu_chaitanya_Software_Engineering%20.pdf#view=FitH&zoom=page-width"
+                title="Chaitanya Adepu Resume"
+                className="h-[200%] w-[200%] origin-top-left scale-50 border-0 bg-white sm:h-full sm:w-full sm:scale-100"
+              />
+            </div>
           </div>
         </div>
       )}
