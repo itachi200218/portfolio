@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const technologies = [
   "Java",
@@ -71,12 +71,55 @@ const architecturePoints = [
 function ScrollReveal({
   children,
   className = "",
+  delay = 0,
 }: {
   children: React.ReactNode;
   className?: string;
   delay?: number;
 }) {
-  return <div className={className}>{children}</div>;
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    // Keep the reveal animation on desktop only.
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      setVisible(true);
+      return;
+    }
+
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.unobserve(element);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -70px 0px",
+      }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`scroll-reveal-desktop transition-[transform,opacity,filter] duration-[950ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:blur-0 ${
+        visible
+          ? "translate-y-0 opacity-100 blur-0"
+          : "translate-y-16 opacity-0 blur-[6px]"
+      } ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
 }
 
 function GlassCard({
@@ -86,10 +129,53 @@ function GlassCard({
   children: React.ReactNode;
   className?: string;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const element = ref.current;
+    if (!element) return;
+
+    const rect = element.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    element.style.setProperty("--mouse-x", `${x}px`);
+    element.style.setProperty("--mouse-y", `${y}px`);
+    element.style.setProperty(
+      "--rotate-x",
+      `${((y / rect.height) - 0.5) * -2.5}deg`
+    );
+    element.style.setProperty(
+      "--rotate-y",
+      `${((x / rect.width) - 0.5) * 2.5}deg`
+    );
+  };
+
+  const handleMouseLeave = () => {
+    const element = ref.current;
+    if (!element) return;
+
+    element.style.setProperty("--rotate-x", "0deg");
+    element.style.setProperty("--rotate-y", "0deg");
+  };
+
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl border border-white/[0.10] bg-white/[0.035] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.18)] ${className}`}
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+className={`group/glass relative overflow-hidden rounded-3xl border border-white/[0.10] bg-white/[0.035] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.18)] transition-[transform,border-color,background,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:hover:-translate-y-1 md:hover:border-white/[0.18] md:hover:bg-white/[0.055] md:hover:shadow-[0_30px_100px_rgba(0,0,0,0.28)] md:[transform:perspective(1000px)_rotateX(var(--rotate-x))_rotateY(var(--rotate-y))] ${className}`}      style={{
+        ["--mouse-x" as string]: "50%",
+        ["--mouse-y" as string]: "50%",
+        ["--rotate-x" as string]: "0deg",
+        ["--rotate-y" as string]: "0deg",
+      }}
     >
+      <div className="pointer-events-none absolute inset-0 hidden rounded-3xl bg-[radial-gradient(420px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.11),transparent_58%)] opacity-0 transition-opacity duration-500 md:block group-hover/glass:opacity-100" />
+      <div className="pointer-events-none absolute -left-20 -top-20 hidden h-40 w-40 rounded-full bg-cyan-400/[0.07] blur-3xl transition-transform duration-700 md:block group-hover/glass:translate-x-8 group-hover/glass:translate-y-6" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 hidden h-48 w-48 rounded-full bg-purple-400/[0.06] blur-3xl transition-transform duration-700 md:block group-hover/glass:-translate-x-8 group-hover/glass:-translate-y-6" />
+      <div className="pointer-events-none absolute inset-y-0 -left-1/2 hidden w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 transition-transform duration-1000 md:block group-hover/glass:translate-x-[320%] group-hover/glass:opacity-100" />
+      <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/[0.04]" />
       <div className="relative z-10">{children}</div>
     </div>
   );
@@ -140,6 +226,17 @@ function MetricCard({
   );
 }
 
+const mobilePerformanceStyles = `
+  @media (max-width: 767px) {
+    .scroll-reveal-desktop {
+      transform: none !important;
+      opacity: 1 !important;
+      filter: none !important;
+      transition: none !important;
+    }
+  }
+`;
+
 export default function AllureIQCaseStudy() {
   const router = useRouter();
   const [activeSection, setActiveSection] = useState("top");
@@ -159,7 +256,34 @@ export default function AllureIQCaseStudy() {
     ["11", "Decisions", "decisions"],
   ] as const;
 
+  useEffect(() => {
+    const ids = ["top", ...sectionTabs.map(([, , id]) => id)];
+    const elements = ids
+      .map((id) => document.getElementById(id))
+      .filter((element): element is HTMLElement => Boolean(element));
 
+    if (!elements.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visible?.target instanceof HTMLElement) {
+          setActiveSection(visible.target.id);
+        }
+      },
+      {
+        rootMargin: "-126px 0px -55% 0px",
+        threshold: [0.05, 0.15, 0.3, 0.5],
+      }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => observer.disconnect();
+  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -178,8 +302,15 @@ export default function AllureIQCaseStudy() {
 
   return (
     <main className="min-h-screen scroll-smooth overflow-x-clip bg-[#02030a] text-white selection:bg-cyan-400/20 selection:text-cyan-100">
+      {/* Background atmosphere */}
+      <div className="pointer-events-none fixed inset-0 -z-0 hidden overflow-hidden md:block">
+        <div className="absolute left-[8%] top-[5%] h-[440px] w-[440px] rounded-full bg-cyan-500/[0.07] blur-[150px]" />
+        <div className="absolute right-[3%] top-[30%] h-[520px] w-[520px] rounded-full bg-purple-500/[0.065] blur-[170px]" />
+        <div className="absolute bottom-[5%] left-[35%] h-[460px] w-[460px] rounded-full bg-blue-500/[0.05] blur-[160px]" />
+      </div>
+
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-white/[0.08] bg-black/80">
+      <nav className="sticky top-0 z-50 border-b border-white/[0.08] bg-black/35 backdrop-blur-2xl backdrop-saturate-[180%]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
           <button
             type="button"
@@ -201,7 +332,7 @@ export default function AllureIQCaseStudy() {
       </nav>
 
       {/* Section navigation */}
-      <div className="sticky top-[69px] z-40 border-b border-white/[0.07] bg-black/80">
+      <div className="sticky top-[69px] z-40 border-b border-white/[0.07] bg-black/25 backdrop-blur-2xl backdrop-saturate-[180%]">
         <div className="mx-auto max-w-7xl px-1 lg:px-6">
           <div className="relative lg:hidden">
             <button
@@ -221,7 +352,7 @@ export default function AllureIQCaseStudy() {
             </button>
 
             {mobileSectionsOpen && (
-              <div className="absolute inset-x-0 top-full grid grid-cols-2 gap-2 border-x border-b border-white/[0.08] bg-[#080910] p-3 shadow-2xl">
+              <div className="absolute inset-x-0 top-full grid grid-cols-2 gap-2 border-x border-b border-white/[0.08] bg-[#080910]/95 p-3 shadow-2xl backdrop-blur-2xl">
                 <button
                   type="button"
                   onClick={() => scrollToSection("top")}
@@ -321,7 +452,7 @@ export default function AllureIQCaseStudy() {
               {technologies.map((tech) => (
                 <span
                   key={tech}
-                  className="rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-1.5 text-xs text-zinc-400"
+                  className="rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-1.5 text-xs text-zinc-400 backdrop-blur-xl"
                 >
                   {tech}
                 </span>
@@ -404,7 +535,7 @@ export default function AllureIQCaseStudy() {
       {/* Engineering Highlights */}
       <ScrollReveal>
         <section className="relative z-10 mx-auto max-w-7xl px-6 pb-24 lg:px-10">
-          <div className="overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.025]">
+          <div className="overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-2xl">
             <div className="grid divide-y divide-white/[0.06] md:grid-cols-4 md:divide-x md:divide-y-0">
               {[
                 ["3.2.6", "Framework Version", "Reusable Maven dependency"],
@@ -943,7 +1074,7 @@ export default function AllureIQCaseStudy() {
             subtitle="A layered stack connecting automation, backend services, reporting, persistence and delivery."
           />
 
-          <div className="overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.025]">
+          <div className="overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-2xl">
             {[
               ["Automation & Testing", "Java / TestNG / REST Assured"],
               ["Reporting", "Allure Reports"],
@@ -1057,8 +1188,10 @@ export default function AllureIQCaseStudy() {
       {/* Closing */}
       <ScrollReveal>
         <section className="relative z-10 mx-auto max-w-7xl px-6 pb-32 pt-24 lg:px-10">
-          <div className="relative overflow-hidden rounded-[2rem] border border-cyan-400/[0.12] bg-cyan-400/[0.025] p-8 text-center md:p-16">
-                  <div className="relative">
+          <div className="relative overflow-hidden rounded-[2rem] border border-cyan-400/[0.12] bg-cyan-400/[0.025] p-8 text-center backdrop-blur-2xl md:p-16">
+            <div className="pointer-events-none absolute left-1/2 top-0 h-40 w-80 -translate-x-1/2 rounded-full bg-cyan-400/[0.08] blur-[90px]" />
+
+            <div className="relative">
               <span className="text-xs uppercase tracking-[0.3em] text-cyan-400">
                 AllureIQ Framework v3.2.6
               </span>
