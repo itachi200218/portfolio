@@ -542,14 +542,17 @@ export default function TechnologyExplorer({
     };
   }, []);
 
+  // The Home page mounts this component twice (desktop + mobile).
+  // Do not let each instance independently save/restore body overflow,
+  // because one hidden instance can restore an old value after the
+  // visible instance closes and leave Home scroll-locked.
+  //
+  // The modal backdrop is fixed and covers the viewport, so the body
+  // does not need to be modified at all. This keeps Home scrolling
+  // reliable after every open -> project -> back -> close flow.
   useEffect(() => {
-    if (!open) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && open) {
         close();
       }
     };
@@ -557,10 +560,17 @@ export default function TechnologyExplorer({
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [open]);
+
+  useEffect(() => {
+    return () => {
+      if (typeof document !== "undefined") {
+        document.body.style.removeProperty("overflow");
+      }
+    };
+  }, []);
 
   const results = useMemo(() => {
     const trimmedQuery = query.trim();
