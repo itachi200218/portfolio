@@ -639,7 +639,7 @@ export default function TechnologyExplorer({
         onClick={openExplorer}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="transition-all duration-300 hover:text-white"
+        className="flex w-full items-center justify-start text-[16px] text-zinc-300 transition-all duration-300 hover:text-white md:inline-flex md:w-auto md:text-sm md:text-zinc-400"
       >
         Technologies
       </button>
