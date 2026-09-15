@@ -512,9 +512,12 @@ export default function TechnologyExplorer({
       }>;
 
       if (customEvent.detail?.action === "clear-restore") {
+        // Clear only the stale restored technology state.
+        // Do NOT reset projectGroup here: the instance that dispatched
+        // this event may have just selected Frameworks, Platforms, AI Agent,
+        // or Full Stack and that selection must remain active.
         setQuery("");
         setSelected(null);
-        setProjectGroup("all");
         return;
       }
 
