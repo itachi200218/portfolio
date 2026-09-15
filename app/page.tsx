@@ -70,29 +70,28 @@ function ScrollReveal({
     return () => observer.disconnect();
   }, []);
 
-  return (
-    <div
-      ref={ref}
-      className={`
-        transition-[transform,opacity,filter]
-        duration-[900ms]
-        motion-reduce:transition-none
-        motion-reduce:translate-y-0
-        motion-reduce:opacity-100
-        motion-reduce:blur-0
-        ease-[cubic-bezier(0.16,1,0.3,1)]
-        ${
-          visible
-            ? "translate-y-0 opacity-100 blur-0"
-            : "translate-y-14 opacity-0 blur-[6px]"
-        }
-        ${className}
-      `}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
+return (
+  <div
+    ref={ref}
+    className={`
+      transition-[transform,opacity]
+      duration-[900ms]
+      motion-reduce:transition-none
+      motion-reduce:translate-y-0
+      motion-reduce:opacity-100
+      ease-[cubic-bezier(0.16,1,0.3,1)]
+      ${
+        visible
+          ? "translate-y-0 opacity-100"
+          : "translate-y-14 opacity-0"
+      }
+      ${className}
+    `}
+    style={{ transitionDelay: `${delay}ms` }}
+  >
+    {children}
+  </div>
+);
 }
 
 export default function Home() {
@@ -443,10 +442,11 @@ const scrollToTop = () => {
     </ScrollReveal>
 
     <ScrollReveal delay={120}>
-    <Link
-  href="/projects/allureiq"
-  className="group block h-full"
->
+      <Link
+        onClick={rememberHomeScroll}
+        href="/projects/allureiq"
+        className="group block h-full"
+      >
         <Project
           number="02"
           title="AllureIQ"
