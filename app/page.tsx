@@ -443,11 +443,10 @@ const scrollToTop = () => {
     </ScrollReveal>
 
     <ScrollReveal delay={120}>
-      <Link
-        onClick={rememberHomeScroll}
-        href="/projects/allureiq"
-        className="group block h-full"
-      >
+    <Link
+  href="/projects/allureiq"
+  className="group block h-full"
+>
         <Project
           number="02"
           title="AllureIQ"
