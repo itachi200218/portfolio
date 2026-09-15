@@ -99,6 +99,7 @@ function ScrollReveal({
 export default function Home() {
   const router = useRouter();
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [restoreTechnology, setRestoreTechnology] = useState<string | null>(null);
 
   // Prefetch the AllureIQ case-study route on Home page load.
   // This is a targeted Safari performance test.
@@ -144,6 +145,14 @@ const rememberHomeScroll = () => {
   );
 };
 
+const rememberTechnologySelection = (technologyName: string) => {
+  sessionStorage.setItem(
+    "portfolio-return-technology",
+    technologyName
+  );
+  rememberHomeScroll();
+};
+
 const scrollToTop = () => {
   window.scrollTo({
     top: 0,
@@ -166,7 +175,10 @@ const scrollToTop = () => {
 
       {/* DESKTOP NAV */}
       <div className="hidden items-center gap-8 text-sm text-zinc-400 md:flex">
-        <TechnologyExplorer onProjectNavigate={rememberHomeScroll} />
+        <TechnologyExplorer
+          onProjectNavigate={rememberTechnologySelection}
+          restoreTechnology={restoreTechnology}
+        />
 
         <a
           href="#work"
@@ -284,7 +296,10 @@ const scrollToTop = () => {
       `}
     >
       <div className="px-5 py-4 text-[16px] text-zinc-300">
-        <TechnologyExplorer onProjectNavigate={rememberHomeScroll} />
+        <TechnologyExplorer
+          onProjectNavigate={rememberTechnologySelection}
+          restoreTechnology={restoreTechnology}
+        />
       </div>
 
       <a
