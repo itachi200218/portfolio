@@ -102,9 +102,11 @@ export default function Home() {
 
   // Prefetch the AllureIQ case-study route on Home page load.
   // This is a targeted Safari performance test.
-  useEffect(() => {
-    router.prefetch("/projects/allureiq");
-  }, [router]);
+useEffect(() => {
+  router.prefetch("/projects/allureiq");
+  router.prefetch("/projects/food-finder");
+  router.prefetch("/projects/km-portal");
+}, [router]);
 
 useEffect(() => {
   const handleScroll = () => {
