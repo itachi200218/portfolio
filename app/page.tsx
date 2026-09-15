@@ -417,7 +417,7 @@ const scrollToTop = () => {
 
   <div className="grid gap-6 md:grid-cols-2">
 
-    <ScrollReveal>
+    {/* <ScrollReveal>
       <Link
         onClick={rememberHomeScroll}
         href="/projects/jarvis"
@@ -487,7 +487,7 @@ const scrollToTop = () => {
           ]}
         />
       </Link>
-    </ScrollReveal>
+    </ScrollReveal> */}
 
   </div>
 </div>
@@ -501,7 +501,7 @@ const scrollToTop = () => {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <ScrollReveal>
+            {/* <ScrollReveal>
               <Link
                 onClick={rememberHomeScroll}
         href="/projects/sfcc-promotion"
@@ -569,7 +569,7 @@ const scrollToTop = () => {
                   ]}
                 />
               </Link>
-            </ScrollReveal>
+            </ScrollReveal> */}
           </div>
         </div>
       </section>
