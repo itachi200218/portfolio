@@ -81,12 +81,6 @@ function ScrollReveal({
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Keep the reveal animation on desktop only.
-    if (window.matchMedia("(max-width: 767px)").matches) {
-      setVisible(true);
-      return;
-    }
-
     const element = ref.current;
     if (!element) return;
 
@@ -104,13 +98,14 @@ function ScrollReveal({
     );
 
     observer.observe(element);
+
     return () => observer.disconnect();
   }, []);
 
   return (
     <div
       ref={ref}
-      className={`scroll-reveal-desktop transition-[transform,opacity,filter] duration-[950ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:blur-0 ${
+      className={`transition-[transform,opacity,filter] duration-[950ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:blur-0 ${
         visible
           ? "translate-y-0 opacity-100 blur-0"
           : "translate-y-16 opacity-0 blur-[6px]"
@@ -132,8 +127,6 @@ function GlassCard({
   const ref = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (window.matchMedia("(max-width: 767px)").matches) return;
-
     const element = ref.current;
     if (!element) return;
 
@@ -166,7 +159,8 @@ function GlassCard({
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-className={`group/glass relative overflow-hidden rounded-3xl border border-white/[0.10] bg-white/[0.035] p-6 backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_20px_80px_rgba(0,0,0,0.18)] transition-[transform,border-color,background,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-white/[0.18] hover:bg-white/[0.055] hover:shadow-[0_30px_100px_rgba(0,0,0,0.28)] md:[transform:perspective(1000px)_rotateX(var(--rotate-x))_rotateY(var(--rotate-y))] ${className}`}      style={{
+      className={`group/glass relative overflow-hidden rounded-3xl border border-white/[0.10] bg-white/[0.035] p-6 backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_20px_80px_rgba(0,0,0,0.18)] transition-[transform,border-color,background,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-white/[0.18] hover:bg-white/[0.055] hover:shadow-[0_30px_100px_rgba(0,0,0,0.28)] md:[transform:perspective(1000px)_rotateX(var(--rotate-x))_rotateY(var(--rotate-y))] ${className}`}
+      style={{
         ["--mouse-x" as string]: "50%",
         ["--mouse-y" as string]: "50%",
         ["--rotate-x" as string]: "0deg",
@@ -174,11 +168,42 @@ className={`group/glass relative overflow-hidden rounded-3xl border border-white
       }}
     >
       <div className="pointer-events-none absolute inset-0 rounded-3xl bg-[radial-gradient(420px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.11),transparent_58%)] opacity-0 transition-opacity duration-500 group-hover/glass:opacity-100" />
+
       <div className="pointer-events-none absolute -left-20 -top-20 h-40 w-40 rounded-full bg-cyan-400/[0.07] blur-3xl transition-transform duration-700 group-hover/glass:translate-x-8 group-hover/glass:translate-y-6" />
+
       <div className="pointer-events-none absolute -bottom-24 -right-24 h-48 w-48 rounded-full bg-purple-400/[0.06] blur-3xl transition-transform duration-700 group-hover/glass:-translate-x-8 group-hover/glass:-translate-y-6" />
+
       <div className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 transition-transform duration-1000 group-hover/glass:translate-x-[320%] group-hover/glass:opacity-100" />
+
       <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/[0.04]" />
+
       <div className="relative z-10">{children}</div>
+    </div>
+  );
+}
+
+function ArchitectureImage({
+  src,
+  alt,
+}: {
+  src: string;
+  alt: string;
+}) {
+  return (
+    <div className="group relative overflow-hidden rounded-[2rem] border border-white/[0.10] bg-white/[0.025] p-2 shadow-[0_30px_100px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(34,211,238,0.08),transparent_35%),radial-gradient(circle_at_90%_100%,rgba(168,85,247,0.08),transparent_35%)] opacity-70" />
+      <div className="pointer-events-none absolute inset-0 rounded-[2rem] ring-1 ring-inset ring-white/[0.05]" />
+
+      <div className="relative overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-black/40">
+        <Image
+          src={src}
+          alt={alt}
+          width={1536}
+          height={1024}
+          className="h-auto w-full transition duration-700 ease-out group-hover:scale-[1.012]"
+          priority
+        />
+      </div>
     </div>
   );
 }
@@ -228,16 +253,6 @@ function MetricCard({
   );
 }
 
-const mobilePerformanceStyles = `
-  @media (max-width: 767px) {
-    .scroll-reveal-desktop {
-      transform: none !important;
-      opacity: 1 !important;
-      filter: none !important;
-      transition: none !important;
-    }
-  }
-`;
 
 export default function AllureIQCaseStudy() {
   const router = useRouter();
@@ -306,9 +321,9 @@ export default function AllureIQCaseStudy() {
     <main className="min-h-screen scroll-smooth overflow-x-clip bg-[#02030a] text-white selection:bg-cyan-400/20 selection:text-cyan-100">
       {/* Background atmosphere */}
       <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
-        <div className="absolute left-[8%] top-[5%] h-[440px] w-[440px] rounded-full bg-cyan-500/[0.07] blur-[150px]" />
-        <div className="absolute right-[3%] top-[30%] h-[520px] w-[520px] rounded-full bg-purple-500/[0.065] blur-[170px]" />
-        <div className="absolute bottom-[5%] left-[35%] h-[460px] w-[460px] rounded-full bg-blue-500/[0.05] blur-[160px]" />
+        <div className="absolute left-[10%] top-[10%] h-[420px] w-[420px] rounded-full bg-cyan-500/[0.07] blur-[140px]" />
+        <div className="absolute right-[5%] top-[35%] h-[500px] w-[500px] rounded-full bg-purple-500/[0.06] blur-[160px]" />
+        <div className="absolute bottom-[10%] left-[35%] h-[400px] w-[400px] rounded-full bg-blue-500/[0.05] blur-[150px]" />
       </div>
 
       {/* Navigation */}
@@ -325,7 +340,7 @@ export default function AllureIQCaseStudy() {
             Back to Portfolio
           </button>
 
-          <div className="hidden items-center gap-6 text-xs text-zinc-500 lg:flex">
+          <div className="hidden items-center gap-6 text-xs text-zinc-500 md:flex">
             <span>AllureIQ</span>
             <span className="h-1 w-1 rounded-full bg-cyan-400" />
             <span>Case Study</span>
@@ -336,167 +351,119 @@ export default function AllureIQCaseStudy() {
       {/* Section navigation */}
       <div className="sticky top-[69px] z-40 border-b border-white/[0.06] bg-black/25 backdrop-blur-2xl backdrop-saturate-[180%]">
         <div className="mx-auto max-w-7xl px-1 lg:px-6">
+          <div className="hidden h-12 items-center gap-1 overflow-x-auto [scrollbar-width:none] lg:flex [&::-webkit-scrollbar]:hidden">
+            <button
+              type="button"
+              onClick={() => scrollToSection("top")}
+              className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] transition ${
+                activeSection === "top"
+                  ? "bg-cyan-400/10 text-cyan-300"
+                  : "text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
+              }`}
+            >
+              Home
+            </button>
+            {sectionTabs.map(([number, title, id]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => scrollToSection(id)}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] transition ${
+                  activeSection === id
+                    ? "bg-cyan-400/10 text-cyan-300"
+                    : "text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
+                }`}
+              >
+                {number} · {title}
+              </button>
+            ))}
+          </div>
+
           <div className="relative lg:hidden">
             <button
               type="button"
               onClick={() => setMobileSectionsOpen((open) => !open)}
               className="flex h-12 w-full items-center justify-between text-left"
-              aria-expanded={mobileSectionsOpen}
-              aria-label="Open section navigation"
             >
               <span className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">
                 Section
               </span>
               <span className="flex items-center gap-3 text-xs text-zinc-300">
-                {sectionTabs.find(([, , id]) => id === activeSection)?.[1] ?? "Overview"}
-                <span className="text-zinc-600">{mobileSectionsOpen ? "−" : "+"}</span>
+                {activeSection === "top"
+                  ? "Home"
+                  : sectionTabs.find(([, , id]) => id === activeSection)?.[1] ?? "Overview"}
+                <span className={`text-zinc-500 transition-transform ${mobileSectionsOpen ? "rotate-180" : ""}`}>
+                  ↓
+                </span>
               </span>
             </button>
 
             {mobileSectionsOpen && (
               <div className="absolute left-0 right-0 top-full border-x border-b border-white/[0.08] bg-[#080a12]/95 p-3 shadow-2xl backdrop-blur-2xl">
                 <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => scrollToSection("top")}
-                  className={`rounded-2xl border px-3 py-3 text-left text-xs transition ${
-                    activeSection === "top"
-                      ? "border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300"
-                      : "border-white/[0.07] bg-white/[0.025] text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
-                  }`}
-                >
-                  <span className="block text-[10px] text-zinc-600">00</span>
-                  <span className="mt-1 block">Home</span>
-                </button>
-
-                {sectionTabs.map(([number, title, id]) => (
                   <button
-                    key={id}
                     type="button"
-                    onClick={() => scrollToSection(id)}
+                    onClick={() => scrollToSection("top")}
                     className={`rounded-2xl border px-3 py-3 text-left text-xs transition ${
-                      activeSection === id
+                      activeSection === "top"
                         ? "border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300"
-                        : "border-white/[0.07] bg-white/[0.025] text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
+                        : "border-white/[0.07] bg-white/[0.025] text-zinc-400 hover:bg-white/[0.05]"
                     }`}
                   >
-                    <span className="block text-[10px] text-zinc-600">{number}</span>
-                    <span className="mt-1 block">{title}</span>
+                    <span className="block text-[10px] text-zinc-600">—</span>
+                    Home
                   </button>
-                ))}
+
+                  {sectionTabs.map(([number, title, id]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => scrollToSection(id)}
+                      className={`rounded-2xl border px-3 py-3 text-left text-xs transition ${
+                        activeSection === id
+                          ? "border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300"
+                          : "border-white/[0.07] bg-white/[0.025] text-zinc-400 hover:bg-white/[0.05]"
+                      }`}
+                    >
+                      <span className="block text-[10px] text-zinc-600">{number}</span>
+                      {title}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
-          </div>
-
-          <div className="hidden h-12 items-center gap-1 overflow-x-auto [scrollbar-width:none] lg:flex [&::-webkit-scrollbar]:hidden">
-            <button
-              type="button"
-              onClick={() => scrollToSection("top")}
-              className={`shrink-0 rounded-full px-3 py-1.5 text-xs transition ${
-                activeSection === "top"
-                  ? "bg-white/[0.08] text-white"
-                  : "text-zinc-600 hover:bg-white/[0.05] hover:text-zinc-300"
-              }`}
-            >
-              Home
-            </button>
-
-            {sectionTabs.map(([number, title, id]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => scrollToSection(id)}
-                className={`shrink-0 rounded-full px-3 py-1.5 text-xs transition ${
-                  activeSection === id
-                    ? "bg-cyan-400/[0.09] text-cyan-300"
-                    : "text-zinc-600 hover:bg-white/[0.05] hover:text-zinc-300"
-                }`}
-              >
-                <span className="mr-1.5 text-zinc-700">{number}</span>
-                {title}
-              </button>
-            ))}
           </div>
         </div>
       </div>
 
       {/* Hero */}
       <ScrollReveal>
-        <section id="top" className="relative z-10 mx-auto max-w-7xl scroll-mt-32 px-6 pb-24 pt-24 lg:px-10 lg:pt-32">
-          <div className="max-w-5xl">
-            <div className="mb-6 flex flex-wrap items-center gap-3">
-              <span className="rounded-full border border-cyan-400/20 bg-cyan-400/[0.08] px-3 py-1 text-xs font-medium tracking-wider text-cyan-300">
-                ENGINEERING INTELLIGENCE PLATFORM
-              </span>
-
+        <section id="top" className="scroll-mt-32 relative z-10 mx-auto max-w-7xl px-6 pb-24 pt-24 lg:px-10 lg:pt-32">
+          <div className="max-w-4xl">
+            <div className="mb-6 flex items-center gap-3">
+              <span className="rounded-full border border-cyan-400/20 bg-cyan-400/[0.08] px-3 py-1 text-xs font-medium tracking-wider text-cyan-300">ENGINEERING INTELLIGENCE PLATFORM</span>
               <span className="text-xs text-zinc-600">•</span>
-
-              <span className="text-xs tracking-wider text-zinc-500">
-                AI-POWERED ENGINEERING INTELLIGENCE
-              </span>
+              <span className="text-xs tracking-wider text-zinc-500">AI-POWERED ENGINEERING INTELLIGENCE</span>
             </div>
-
-            <h1 className="text-5xl font-semibold tracking-[-0.05em] md:text-7xl">
-              AllureIQ
-            </h1>
-
-            <p className="mt-4 text-xl font-light text-zinc-300 md:text-2xl">
-              A reusable engineering intelligence platform that transforms automated API execution into
-              persistent, searchable and AI-assisted engineering intelligence.
-            </p>
-
-            <p className="mt-6 max-w-4xl text-base leading-8 text-zinc-500">
-              AllureIQ Framework connects API automation, reporting, AI analysis, persistence,
-              search and CI/CD into a reusable platform for understanding and improving
-              software execution at scale.
-            </p>
-
+            <h1 className="text-5xl font-semibold tracking-[-0.04em] md:text-7xl">AllureIQ</h1>
+            <p className="mt-4 text-xl font-light text-zinc-300 md:text-2xl">A reusable engineering intelligence platform that transforms automated API execution into persistent, searchable and AI-assisted engineering intelligence.</p>
+            <p className="mt-6 max-w-3xl text-base leading-8 text-zinc-500">AllureIQ Framework connects API automation, reporting, AI analysis, persistence, search and CI/CD into a reusable platform for understanding and improving software execution at scale.</p>
             <div className="mt-8 flex flex-wrap gap-2">
-              {technologies.map((tech) => (
-                <span
-                  key={tech}
-                  className="rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-1.5 text-xs text-zinc-400 backdrop-blur-xl"
-                >
-                  {tech}
-                </span>
-              ))}
+              {technologies.map((tech) => (<span key={tech} className="rounded-full border border-white/[0.1] bg-white/[0.04] px-3 py-1.5 text-xs text-zinc-400 backdrop-blur-xl">{tech}</span>))}
             </div>
-
-            <div className="mt-12 grid gap-4 md:grid-cols-3">
-              <GlassCard>
-                <span className="text-xs text-cyan-400">01</span>
-                <h3 className="mt-5 text-lg font-medium">
-                  Intelligent Testing
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-zinc-500">
-                  Automation results are transformed into actionable AI
-                  intelligence.
-                </p>
-              </GlassCard>
-
-              <GlassCard>
-                <span className="text-xs text-cyan-400">02</span>
-                <h3 className="mt-5 text-lg font-medium">
-                  Unified Analytics
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-zinc-500">
-                  Execution, performance, errors and historical insights come
-                  together in one platform.
-                </p>
-              </GlassCard>
-
-              <GlassCard>
-                <span className="text-xs text-cyan-400">03</span>
-                <h3 className="mt-5 text-lg font-medium">
-                  Reusable Framework
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-zinc-500">
-                  Published as a Maven dependency for reuse across automation
-                  projects.
-                </p>
-              </GlassCard>
-            </div>
+          </div>
+          <div className="mt-16 grid gap-4 md:grid-cols-3">
+            {[
+              ["01", "Intelligent Testing", "Automation results are transformed into actionable AI intelligence."],
+              ["02", "Unified Analytics", "Execution, performance, errors and historical insights come together in one platform."],
+              ["03", "Reusable Framework", "Published as a Maven dependency for reuse across automation projects."],
+            ].map(([number, title, description]) => (
+              <div key={number} className="rounded-3xl border border-white/[0.09] bg-white/[0.035] p-6 backdrop-blur-2xl transition duration-300 hover:-translate-y-1 hover:bg-white/[0.055]">
+                <span className="text-xs text-cyan-400">{number}</span>
+                <h3 className="mt-5 text-lg font-medium">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-zinc-500">{description}</p>
+              </div>
+            ))}
           </div>
         </section>
       </ScrollReveal>
