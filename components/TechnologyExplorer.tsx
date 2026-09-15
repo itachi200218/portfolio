@@ -409,7 +409,8 @@ export default function TechnologyExplorer({
     );
 
     if (technology) {
-      setSelected(technology);
+      setQuery(technology.name);
+      setSelected(null);
       setOpen(true);
     }
   }, [restoreTechnology]);
@@ -505,19 +506,6 @@ export default function TechnologyExplorer({
   const openExplorer = () => {
     setOpen(true);
 
-    // Restore the technology explorer state when returning from a case study.
-    // The hash is intentionally local to this component and does not affect
-    // the existing portfolio routes.
-    const hash = window.location.hash;
-    if (hash.startsWith("#technology=")) {
-      const technologyName = decodeURIComponent(hash.slice("#technology=".length));
-      const technology = TECHNOLOGIES.find(
-        (item) => item.name === technologyName
-      );
-      if (technology) {
-        setSelected(technology);
-      }
-    }
   };
 
   return (

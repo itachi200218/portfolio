@@ -146,12 +146,17 @@ const rememberHomeScroll = () => {
 };
 
 const rememberTechnologySelection = (technologyName: string) => {
-  sessionStorage.setItem(
-    "portfolio-return-technology",
-    technologyName
-  );
+  sessionStorage.setItem("portfolio-return-technology", technologyName);
   rememberHomeScroll();
 };
+
+useEffect(() => {
+  const technologyName = sessionStorage.getItem("portfolio-return-technology");
+  if (!technologyName) return;
+
+  setRestoreTechnology(technologyName);
+  sessionStorage.removeItem("portfolio-return-technology");
+}, []);
 
 const scrollToTop = () => {
   window.scrollTo({
