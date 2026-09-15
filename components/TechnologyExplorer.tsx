@@ -424,6 +424,15 @@ export default function TechnologyExplorer({
   useEffect(() => {
     if (!restoreTechnology) return;
 
+    // If the user explicitly changed the restored view (for example,
+    // Java -> All), do not re-apply the old restore value.
+    if (
+      typeof window !== "undefined" &&
+      sessionStorage.getItem("portfolio-restore-dismissed") === "true"
+    ) {
+      return;
+    }
+
     if (restoreTechnology.startsWith("__GROUP__:")) {
       const group = restoreTechnology.replace("__GROUP__:", "") as
         | "frameworks"
@@ -457,6 +466,22 @@ export default function TechnologyExplorer({
     setQuery("");
     setSelected(null);
     setProjectGroup("all");
+  };
+
+  const dismissRestore = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("portfolio-restore-dismissed", "true");
+      sessionStorage.removeItem("portfolio-return-technology");
+    }
+  };
+
+  const startProjectNavigation = (restoreValue: string) => {
+    if (typeof window !== "undefined") {
+      // A new project navigation starts a fresh restore cycle.
+      sessionStorage.removeItem("portfolio-restore-dismissed");
+    }
+    onProjectNavigate?.(restoreValue);
+    close();
   };
 
   useEffect(() => {
@@ -623,7 +648,7 @@ export default function TechnologyExplorer({
                         setProjectGroup("all");
                         setQuery(event.target.value);
                         setSelected(null);
-                        sessionStorage.removeItem("portfolio-return-technology");
+                        dismissRestore();
                       }}
                       onKeyDown={(event) => {
                         if (event.key === "Escape") close();
@@ -638,9 +663,9 @@ export default function TechnologyExplorer({
                         type="button"
                         onClick={() => {
                           setProjectGroup("all");
-                            setQuery("");
+                          setQuery("");
                           setSelected(null);
-                          sessionStorage.removeItem("portfolio-return-technology");
+                          dismissRestore();
                         }}
                         aria-label="Clear technology search"
                         className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-zinc-500 transition hover:bg-white/[0.08] hover:text-white"
@@ -669,10 +694,10 @@ export default function TechnologyExplorer({
                             setQuery("");
                             setSelected(null);
 
-                            if (filter.value === "all") {
-                              sessionStorage.removeItem("portfolio-return-technology");
-                            } else {
-                                                  }
+                            // Choosing any filter is an explicit user action,
+                            // so the previous restored technology/group must not
+                            // reappear when the popup is closed.
+                            dismissRestore();
                           }}
                           className={`rounded-full border px-3 py-1.5 text-[10px] uppercase tracking-[0.14em] transition ${
                             active
@@ -709,8 +734,7 @@ export default function TechnologyExplorer({
                             key={item.project}
                             href={item.href}
                             onClick={() => {
-                              onProjectNavigate?.(`__GROUP__:${projectGroup}`);
-                              close();
+                              startProjectNavigation(`__GROUP__:${projectGroup}`);
                             }}
                             className="group block w-full rounded-2xl border border-transparent px-4 py-4 text-left transition-all duration-200 hover:border-cyan-300/20 hover:bg-white/[0.05]"
                           >
@@ -827,8 +851,7 @@ export default function TechnologyExplorer({
                               key={`${selected.name}-${item.project}`}
                               href={item.href}
                               onClick={() => {
-                                onProjectNavigate?.(selected.name);
-                                close();
+                                startProjectNavigation(selected.name);
                               }}
                               className="group block rounded-2xl border border-white/[0.08] bg-white/[0.035] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-300/20 hover:bg-white/[0.06] hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]"
                             >
