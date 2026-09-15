@@ -81,7 +81,7 @@ function ScrollReveal({
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Keep the reveal animation on desktop only.
+    // Mobile: render immediately; desktop keeps the original reveal animation.
     if (window.matchMedia("(max-width: 767px)").matches) {
       setVisible(true);
       return;
@@ -110,10 +110,8 @@ function ScrollReveal({
   return (
     <div
       ref={ref}
-      className={`scroll-reveal-desktop transition-[transform,opacity,filter] duration-[950ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:blur-0 ${
-        visible
-          ? "translate-y-0 opacity-100 blur-0"
-          : "translate-y-16 opacity-0 blur-[6px]"
+      className={`scroll-reveal-desktop transition-[transform,opacity,filter] duration-[950ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 blur-0 ${
+        visible ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0 blur-[6px]"
       } ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -132,6 +130,9 @@ function GlassCard({
   const ref = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    // Touch/mobile devices do not need the desktop pointer-tracking effect.
+    if (window.matchMedia("(max-width: 767px)").matches) return;
+
     const element = ref.current;
     if (!element) return;
 
@@ -164,17 +165,17 @@ function GlassCard({
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-className={`group/glass relative overflow-hidden rounded-3xl border border-white/[0.10] bg-white/[0.035] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.18)] transition-[transform,border-color,background,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:hover:-translate-y-1 md:hover:border-white/[0.18] md:hover:bg-white/[0.055] md:hover:shadow-[0_30px_100px_rgba(0,0,0,0.28)] md:[transform:perspective(1000px)_rotateX(var(--rotate-x))_rotateY(var(--rotate-y))] ${className}`}      style={{
+className={`group/glass relative overflow-hidden rounded-3xl border border-white/[0.10] bg-white/[0.035] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.18)] transition-[transform,border-color,background,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-white/[0.18] hover:bg-white/[0.055] hover:shadow-[0_30px_100px_rgba(0,0,0,0.28)] md:[transform:perspective(1000px)_rotateX(var(--rotate-x))_rotateY(var(--rotate-y))] ${className}`}      style={{
         ["--mouse-x" as string]: "50%",
         ["--mouse-y" as string]: "50%",
         ["--rotate-x" as string]: "0deg",
         ["--rotate-y" as string]: "0deg",
       }}
     >
-      <div className="pointer-events-none absolute inset-0 hidden rounded-3xl bg-[radial-gradient(420px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.11),transparent_58%)] opacity-0 transition-opacity duration-500 md:block group-hover/glass:opacity-100" />
-      <div className="pointer-events-none absolute -left-20 -top-20 hidden h-40 w-40 rounded-full bg-cyan-400/[0.07] blur-3xl transition-transform duration-700 md:block group-hover/glass:translate-x-8 group-hover/glass:translate-y-6" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 hidden h-48 w-48 rounded-full bg-purple-400/[0.06] blur-3xl transition-transform duration-700 md:block group-hover/glass:-translate-x-8 group-hover/glass:-translate-y-6" />
-      <div className="pointer-events-none absolute inset-y-0 -left-1/2 hidden w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 transition-transform duration-1000 md:block group-hover/glass:translate-x-[320%] group-hover/glass:opacity-100" />
+      <div className="pointer-events-none absolute inset-0 rounded-3xl bg-[radial-gradient(420px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.11),transparent_58%)] opacity-0 transition-opacity duration-500 group-hover/glass:opacity-100" />
+      <div className="pointer-events-none absolute -left-20 -top-20 h-40 w-40 rounded-full bg-cyan-400/[0.07] blur-3xl transition-transform duration-700 group-hover/glass:translate-x-8 group-hover/glass:translate-y-6" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 h-48 w-48 rounded-full bg-purple-400/[0.06] blur-3xl transition-transform duration-700 group-hover/glass:-translate-x-8 group-hover/glass:-translate-y-6" />
+      <div className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 transition-transform duration-1000 group-hover/glass:translate-x-[320%] group-hover/glass:opacity-100" />
       <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/[0.04]" />
       <div className="relative z-10">{children}</div>
     </div>
@@ -233,6 +234,10 @@ const mobilePerformanceStyles = `
       opacity: 1 !important;
       filter: none !important;
       transition: none !important;
+    }
+
+    .mobile-disable-atmosphere {
+      display: none !important;
     }
   }
 `;
@@ -303,7 +308,7 @@ export default function AllureIQCaseStudy() {
   return (
     <main className="min-h-screen scroll-smooth overflow-x-clip bg-[#02030a] text-white selection:bg-cyan-400/20 selection:text-cyan-100">
       {/* Background atmosphere */}
-      <div className="pointer-events-none fixed inset-0 -z-0 hidden overflow-hidden md:block">
+      <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden mobile-disable-atmosphere">
         <div className="absolute left-[8%] top-[5%] h-[440px] w-[440px] rounded-full bg-cyan-500/[0.07] blur-[150px]" />
         <div className="absolute right-[3%] top-[30%] h-[520px] w-[520px] rounded-full bg-purple-500/[0.065] blur-[170px]" />
         <div className="absolute bottom-[5%] left-[35%] h-[460px] w-[460px] rounded-full bg-blue-500/[0.05] blur-[160px]" />
