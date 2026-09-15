@@ -101,6 +101,54 @@ export default function Home() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [restoreTechnology, setRestoreTechnology] = useState<string | null>(null);
   const [resumeOpen, setResumeOpen] = useState(false);
+  const [resumeDownloading, setResumeDownloading] = useState(false);
+
+  const handleResumeDownload = async () => {
+    const pdfUrl = "/Adepu_chaitanya_Software_Engineering%20.pdf";
+    const fileName = "Adepu_Chaitanya_Resume.pdf";
+
+    try {
+      setResumeDownloading(true);
+
+      const response = await fetch(pdfUrl, { cache: "no-store" });
+      if (!response.ok) throw new Error("Unable to download resume");
+
+      const blob = await response.blob();
+      const file = new File([blob], fileName, {
+        type: "application/pdf",
+      });
+
+      // iPhone/iPad Safari: use the native share sheet when file sharing is supported,
+      // so the user can choose "Save to Files" instead of opening the PDF in-browser.
+      if (
+        typeof navigator !== "undefined" &&
+        navigator.share &&
+        navigator.canShare?.({ files: [file] })
+      ) {
+        await navigator.share({
+          files: [file],
+          title: fileName,
+        });
+        return;
+      }
+
+      // Desktop/Android/other browsers: trigger a real file download.
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    } catch (error) {
+      // If the share sheet was cancelled, do nothing. Otherwise fall back to the PDF.
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      window.open(pdfUrl, "_blank", "noopener,noreferrer");
+    } finally {
+      setResumeDownloading(false);
+    }
+  };
 
   // Prefetch the AllureIQ case-study route on Home page load.
   // This is a targeted Safari performance test.
@@ -216,14 +264,15 @@ const scrollToTop = () => {
                   Open
                 </a>
 
-                <a
-                  href="/Adepu_chaitanya_Software_Engineering%20.pdf"
-                  download="Adepu_Chaitanya_Resume.pdf"
+                <button
+                  type="button"
+                  onClick={handleResumeDownload}
+                  disabled={resumeDownloading}
                   aria-label="Download resume PDF"
-                  className="rounded-full border border-white/[0.08] px-2.5 py-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-zinc-400 transition-colors duration-300 hover:bg-white/[0.05] hover:text-white sm:px-3 sm:text-[10px] sm:tracking-[0.14em]"
+                  className="rounded-full border border-white/[0.08] px-2.5 py-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-zinc-400 transition-colors duration-300 hover:bg-white/[0.05] hover:text-white disabled:cursor-wait disabled:opacity-50 sm:px-3 sm:text-[10px] sm:tracking-[0.14em]"
                 >
-                  Download
-                </a>
+                  {resumeDownloading ? "Preparing…" : "Download"}
+                </button>
 
                 <button
                   type="button"
