@@ -200,9 +200,9 @@ const scrollToTop = () => {
             }
           }}
         >
-          <div className="relative flex h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-white/[0.10] bg-[#080a12]/95 shadow-2xl">
-            <div className="flex h-14 shrink-0 items-center justify-between border-b border-white/[0.08] px-4 sm:px-5">
-              <div className="text-sm font-semibold tracking-tight text-zinc-200">
+          <div className="relative flex h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-white/[0.10] bg-[#080a12]/95 shadow-2xl sm:rounded-3xl">
+            <div className="flex h-12 shrink-0 items-center justify-between border-b border-white/[0.08] px-3 sm:h-14 sm:px-5">
+              <div className="text-xs font-semibold tracking-tight text-zinc-200 sm:text-sm">
                 Resume<span className="text-zinc-600">.</span>
               </div>
 
@@ -211,7 +211,7 @@ const scrollToTop = () => {
                   href="/Adepu_chaitanya_Software_Engineering%20.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full border border-white/[0.08] px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.14em] text-zinc-400 transition-colors duration-300 hover:bg-white/[0.05] hover:text-white"
+                  className="rounded-full border border-white/[0.08] px-2.5 py-1.5 text-[9px] font-medium uppercase tracking-[0.12em] text-zinc-400 transition-colors duration-300 hover:bg-white/[0.05] hover:text-white sm:px-3 sm:text-[10px] sm:tracking-[0.14em]"
                 >
                   Open
                 </a>
@@ -230,7 +230,7 @@ const scrollToTop = () => {
             <iframe
               src="/Adepu_chaitanya_Software_Engineering%20.pdf#view=FitH"
               title="Chaitanya Adepu Resume"
-              className="min-h-0 flex-1 w-full bg-white"
+              className="min-h-0 flex-1 w-full border-0 bg-white"
             />
           </div>
         </div>
