@@ -236,6 +236,15 @@ const scrollToTop = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-white selection:text-black">
+      <style>{`
+        @keyframes resumeShine {
+          0% { transform: translateX(0); opacity: 0; }
+          8% { opacity: 1; }
+          48% { opacity: 1; }
+          55% { opacity: 0; }
+          100% { transform: translateX(340%); opacity: 0; }
+        }
+      `}</style>
       {resumeOpen && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-3 backdrop-blur-md sm:p-6"
@@ -301,7 +310,7 @@ const scrollToTop = () => {
     <div className="flex items-center justify-between">
 
       {/* LOGO + RESUME */}
-      <div className="flex items-center gap-7">
+      <div className="flex items-center gap-16">
         <div className="text-lg font-semibold tracking-tight">
           CHAITANYA<span className="text-zinc-500">.</span>
         </div>
@@ -310,9 +319,15 @@ const scrollToTop = () => {
           type="button"
           onClick={() => setResumeOpen(true)}
           aria-label="Open resume PDF"
-          className="text-lg font-semibold tracking-tight text-zinc-400 transition-all duration-300 hover:text-white"
+          className="group relative overflow-hidden text-lg font-semibold tracking-tight text-zinc-300 transition-colors duration-300 hover:text-white"
         >
-          Resume<span className="text-zinc-600">.</span>
+          <span className="relative z-10">
+            Resume<span className="text-zinc-600">.</span>
+          </span>
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-0 left-[-45%] h-px w-[45%] bg-white/90 shadow-[0_0_10px_rgba(255,255,255,0.75)] animate-[resumeShine_2.2s_linear_infinite]"
+          />
         </button>
       </div>
 
