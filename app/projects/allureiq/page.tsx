@@ -105,11 +105,11 @@ function ScrollReveal({
   return (
     <div
       ref={ref}
-      className={`transition-[transform,opacity,filter] duration-[950ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:blur-0 ${
-        visible
-          ? "translate-y-0 opacity-100 blur-0"
-          : "translate-y-16 opacity-0 blur-[6px]"
-      } ${className}`}
+    className={`transition-[transform,opacity,filter] duration-[950ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:blur-0 ${
+  visible
+    ? "translate-y-0 opacity-100 blur-0"
+    : "translate-y-16 opacity-0 blur-[6px]"
+} ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
