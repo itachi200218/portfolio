@@ -287,7 +287,7 @@ function AppFlipCard({
                 {features.slice(0, 3).map((feature, index) => (
                   <div
                     key={feature}
-                    className="flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-black/20 px-4 py-3"
+                    className="flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.025] px-4 py-3"
                   >
                     <span className={`text-xs ${accentText}`}>
                       {String(index + 1).padStart(2, "0")}
@@ -338,7 +338,7 @@ function AppFlipCard({
               {features.map((feature, index) => (
                 <div
                   key={feature}
-                  className="rounded-2xl border border-white/[0.07] bg-black/20 p-4"
+                  className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4"
                 >
                   <span className={`text-xs ${accentText}`}>
                     {String(index + 1).padStart(2, "0")}
@@ -408,9 +408,9 @@ export default function FoodFinderCaseStudy() {
   return (
     <main className="min-h-screen scroll-smooth overflow-x-clip bg-[#02030a] text-white selection:bg-cyan-400/20 selection:text-cyan-100">
       <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
-        <div className="absolute left-[5%] top-[5%] h-[460px] w-[460px] rounded-full bg-cyan-500/[0.07] blur-[150px]" />
-        <div className="absolute right-[2%] top-[28%] h-[540px] w-[540px] rounded-full bg-purple-500/[0.065] blur-[170px]" />
-        <div className="absolute bottom-[5%] left-[30%] h-[480px] w-[480px] rounded-full bg-blue-500/[0.05] blur-[160px]" />
+        <div className="absolute left-[10%] top-[10%] h-[420px] w-[420px] rounded-full bg-cyan-500/[0.07] blur-[140px]" />
+        <div className="absolute right-[5%] top-[35%] h-[500px] w-[500px] rounded-full bg-purple-500/[0.06] blur-[160px]" />
+        <div className="absolute bottom-[10%] left-[35%] h-[400px] w-[400px] rounded-full bg-blue-500/[0.05] blur-[150px]" />
       </div>
 
       <nav className="sticky top-0 z-50 border-b border-white/[0.08] bg-black/35 backdrop-blur-2xl backdrop-saturate-[180%]">
@@ -687,7 +687,7 @@ export default function FoodFinderCaseStudy() {
                 {architecturePoints.map((point, index) => (
                   <div
                     key={point}
-                    className="flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-black/20 px-4 py-3"
+                    className="flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.025] px-4 py-3"
                   >
                     <span className="text-xs text-zinc-600">
                       {String(index + 1).padStart(2, "0")}
@@ -940,7 +940,7 @@ export default function FoodFinderCaseStudy() {
                 ].map((item) => (
                   <div
                     key={item}
-                    className="rounded-2xl border border-white/[0.07] bg-black/20 px-4 py-3 text-sm text-zinc-300"
+                    className="rounded-2xl border border-white/[0.07] bg-white/[0.025] px-4 py-3 text-sm text-zinc-300"
                   >
                     {item}
                   </div>
@@ -970,7 +970,7 @@ export default function FoodFinderCaseStudy() {
                 ].map(([title, description]) => (
                   <div
                     key={title}
-                    className="rounded-2xl border border-white/[0.07] bg-black/20 p-4"
+                    className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4"
                   >
                     <h4 className="text-sm font-medium">{title}</h4>
                     <p className="mt-1 text-xs leading-5 text-zinc-600">
@@ -1182,10 +1182,8 @@ export default function FoodFinderCaseStudy() {
       {/* Closing */}
       <ScrollReveal>
         <section className="relative z-10 mx-auto max-w-7xl px-6 pb-32 pt-24 lg:px-10">
-          <div className="relative overflow-hidden rounded-[2rem] border border-cyan-400/[0.12] bg-cyan-400/[0.025] p-8 text-center backdrop-blur-2xl md:p-16">
-            <div className="pointer-events-none absolute left-1/2 top-0 h-40 w-80 -translate-x-1/2 rounded-full bg-cyan-400/[0.08] blur-[90px]" />
-
-            <div className="relative">
+          <div className="rounded-[2rem] border border-cyan-400/[0.12] bg-cyan-400/[0.025] p-8 text-center backdrop-blur-2xl md:p-16">
+            <div>
               <span className="text-xs uppercase tracking-[0.3em] text-cyan-400">
                 Food Finder
               </span>
