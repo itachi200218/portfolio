@@ -31,9 +31,21 @@ const PRIMARY_TECHNOLOGIES = new Set([
   "REST APIs",
 ]);
 
-const PORTFOLIO_CATEGORY_PROJECTS = {
-  frameworks: new Set(["AllureIQ", "SFCC Promotion"]),
-  platforms: new Set(["J.A.R.V.I.S", "Food Finder", "LoggerAI", "KM Portal"]),
+const PORTFOLIO_PROJECT_GROUPS = {
+  frameworks: [
+    { project: "AllureIQ", href: "/projects/allureiq", context: "AI-powered test intelligence framework and platform." },
+    { project: "SFCC Promotion Validation Platform", href: "/projects/sfcc-promotion", context: "Reusable enterprise promotion validation framework." },
+  ],
+  platforms: [
+    { project: "J.A.R.V.I.S", href: "/projects/jarvis", context: "Personal AI and real-time collaboration platform." },
+    { project: "Food Finder", href: "/projects/food-finder", context: "AI-enhanced recipe discovery platform." },
+  ],
+  "ai-agent": [
+    { project: "LoggerAI", href: "/projects/loggerai", context: "AI-powered framework diagnostics and root-cause analysis." },
+  ],
+  "full-stack": [
+    { project: "KM Portal", href: "/projects/km-portal", context: "Full-stack knowledge and learning platform." },
+  ],
 } as const;
 
 const TECHNOLOGIES: Technology[] = [
@@ -394,20 +406,41 @@ function scoreTechnology(technology: Technology, rawQuery: string) {
 }
 
 type TechnologyExplorerProps = {
-  onProjectNavigate?: () => void;
+  onProjectNavigate?: (technologyName: string) => void;
+  restoreTechnology?: string | null;
 };
 
 export default function TechnologyExplorer({
   onProjectNavigate,
+  restoreTechnology,
 }: TechnologyExplorerProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Technology | null>(null);
+  const [projectGroup, setProjectGroup] = useState<
+    "all" | "frameworks" | "platforms" | "ai-agent" | "full-stack"
+  >("all");
+
+  useEffect(() => {
+    if (!restoreTechnology) return;
+
+    const technology = TECHNOLOGIES.find(
+      (item) => item.name === restoreTechnology
+    );
+
+    if (technology) {
+      setProjectGroup("all");
+      setQuery(technology.name);
+      setSelected(null);
+      setOpen(true);
+    }
+  }, [restoreTechnology]);
 
   const close = () => {
     setOpen(false);
     setQuery("");
     setSelected(null);
+    setProjectGroup("all");
   };
 
   useEffect(() => {
@@ -462,7 +495,6 @@ export default function TechnologyExplorer({
         if (aIndex !== -1) return -1;
         if (bIndex !== -1) return 1;
 
-        // Keep Selenium immediately above Allure, with Allure always last.
         if (a.name === "Allure" && b.name !== "Allure") return 1;
         if (b.name === "Allure" && a.name !== "Allure") return -1;
         if (a.name === "Selenium" && b.name !== "Selenium") return 1;
@@ -472,7 +504,7 @@ export default function TechnologyExplorer({
       });
     }
 
-    const sorted = TECHNOLOGIES
+    return TECHNOLOGIES
       .map((technology) => ({
         technology,
         score: scoreTechnology(technology, trimmedQuery),
@@ -485,27 +517,11 @@ export default function TechnologyExplorer({
           a.technology.name.localeCompare(b.technology.name)
       )
       .map(({ technology }) => technology);
-
-    const normalizedQuery = trimmedQuery.toLowerCase();
-
-    if (normalizedQuery === "framework") {
-      return sorted.filter((technology) =>
-        technology.usage.some((item) =>
-          PORTFOLIO_CATEGORY_PROJECTS.frameworks.has(item.project)
-        )
-      );
-    }
-
-    if (normalizedQuery === "platform") {
-      return sorted.filter((technology) =>
-        technology.usage.some((item) =>
-          PORTFOLIO_CATEGORY_PROJECTS.platforms.has(item.project)
-        )
-      );
-    }
-
-    return sorted;
   }, [query]);
+
+  const visibleProjectGroup =
+    projectGroup === "all" ? [] : PORTFOLIO_PROJECT_GROUPS[projectGroup];
+
 
   const categoryCount = useMemo(
     () => new Set(TECHNOLOGIES.map((technology) => technology.category)).size,
@@ -514,6 +530,7 @@ export default function TechnologyExplorer({
 
   const openExplorer = () => {
     setOpen(true);
+
   };
 
   return (
@@ -587,6 +604,7 @@ export default function TechnologyExplorer({
                       autoFocus
                       value={query}
                       onChange={(event) => {
+                        setProjectGroup("all");
                         setQuery(event.target.value);
                         setSelected(null);
                       }}
@@ -602,6 +620,7 @@ export default function TechnologyExplorer({
                       <button
                         type="button"
                         onClick={() => {
+                          setProjectGroup("all");
                           setQuery("");
                           setSelected(null);
                         }}
@@ -615,21 +634,21 @@ export default function TechnologyExplorer({
 
                   <div className="mt-4 flex flex-wrap items-center gap-2 px-1">
                     {[
-                      { label: "All", value: "" },
-                      { label: "Frameworks", value: "framework" },
-                      { label: "Platforms", value: "platform" },
+                      { label: "All", value: "all" as const },
+                      { label: "Frameworks", value: "frameworks" as const },
+                      { label: "Platforms", value: "platforms" as const },
+                      { label: "AI Agent", value: "ai-agent" as const },
+                      { label: "Full Stack", value: "full-stack" as const },
                     ].map((filter) => {
-                      const active =
-                        filter.value === ""
-                          ? query === ""
-                          : query.trim().toLowerCase() === filter.value;
+                      const active = projectGroup === filter.value;
 
                       return (
                         <button
                           key={filter.label}
                           type="button"
                           onClick={() => {
-                            setQuery(filter.value);
+                            setProjectGroup(filter.value);
+                            setQuery("");
                             setSelected(null);
                           }}
                           className={`rounded-full border px-3 py-1.5 text-[10px] uppercase tracking-[0.14em] transition ${
@@ -642,14 +661,61 @@ export default function TechnologyExplorer({
                         </button>
                       );
                     })}
+                  </div>
 
-                    <span className="ml-auto hidden text-[10px] text-zinc-700 sm:inline">
-                      {query ? `${results.length} matches` : "All technologies"}
+                  <div className="mt-3 flex items-center justify-between px-1">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-600">
+                      {projectGroup === "all"
+                        ? query
+                          ? `${results.length} matches`
+                          : "All technologies"
+                        : `${visibleProjectGroup.length} projects`}
+                    </p>
+
+                    <span className="text-[10px] text-zinc-700">
+                      {projectGroup === "all"
+                        ? "Select a technology to explore"
+                        : "Select a project to open"}
                     </span>
                   </div>
 
                   <div className="mt-3 min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
-                    {results.map((technology) => (
+                    {projectGroup !== "all"
+                      ? visibleProjectGroup.map((item) => (
+                          <Link
+                            key={item.project}
+                            href={item.href}
+                            onClick={() => {
+                              onProjectNavigate?.(item.project);
+                              close();
+                            }}
+                            className="group block w-full rounded-2xl border border-transparent px-4 py-4 text-left transition-all duration-200 hover:border-cyan-300/20 hover:bg-white/[0.05]"
+                          >
+                            <div className="flex items-center justify-between gap-4">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-medium text-zinc-200 group-hover:text-white">
+                                  {item.project}
+                                </p>
+                                <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-zinc-600">
+                                  {projectGroup === "frameworks"
+                                    ? "Framework"
+                                    : projectGroup === "platforms"
+                                      ? "Platform"
+                                      : projectGroup === "ai-agent"
+                                        ? "AI Agent"
+                                        : "Full Stack"}
+                                </p>
+                              </div>
+                              <span className="text-zinc-600 transition-transform group-hover:translate-x-1 group-hover:text-cyan-300">
+                                →
+                              </span>
+                            </div>
+                            <p className="mt-2 text-xs leading-5 text-zinc-500">
+                              {item.context}
+                            </p>
+                          </Link>
+                        ))
+                      : results.map((technology) => (
                       <button
                         key={technology.name}
                         type="button"
@@ -684,7 +750,7 @@ export default function TechnologyExplorer({
                       </button>
                     ))}
 
-                    {!results.length && (
+                    {projectGroup === "all" && !results.length && (
                       <div className="flex min-h-32 items-center justify-center rounded-2xl border border-dashed border-white/10 px-5 text-center">
                         <div>
                           <p className="text-sm text-zinc-400">
@@ -738,7 +804,7 @@ export default function TechnologyExplorer({
                               key={`${selected.name}-${item.project}`}
                               href={item.href}
                               onClick={() => {
-                                onProjectNavigate?.();
+                                onProjectNavigate?.(selected.name);
                                 close();
                               }}
                               className="group block rounded-2xl border border-white/[0.08] bg-white/[0.035] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-300/20 hover:bg-white/[0.06] hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]"
