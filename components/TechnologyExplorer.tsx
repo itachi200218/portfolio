@@ -31,6 +31,11 @@ const PRIMARY_TECHNOLOGIES = new Set([
   "REST APIs",
 ]);
 
+const PORTFOLIO_CATEGORY_PROJECTS = {
+  frameworks: new Set(["AllureIQ", "SFCC Promotion"]),
+  platforms: new Set(["J.A.R.V.I.S", "Food Finder", "LoggerAI", "KM Portal"]),
+} as const;
+
 const TECHNOLOGIES: Technology[] = [
   {
     name: "Java",
@@ -389,40 +394,21 @@ function scoreTechnology(technology: Technology, rawQuery: string) {
 }
 
 type TechnologyExplorerProps = {
-  onProjectNavigate?: (technologyName: string) => void;
-  restoreTechnology?: string | null;
+  onProjectNavigate?: () => void;
 };
 
 export default function TechnologyExplorer({
   onProjectNavigate,
-  restoreTechnology,
 }: TechnologyExplorerProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Technology | null>(null);
-  const [categoryFilter, setCategoryFilter] = useState<"all" | "frameworks" | "platforms">("all");
 
   const close = () => {
     setOpen(false);
     setQuery("");
     setSelected(null);
-    setCategoryFilter("all");
   };
-
-  useEffect(() => {
-    if (!restoreTechnology) return;
-
-    const technology = TECHNOLOGIES.find(
-      (item) => item.name === restoreTechnology
-    );
-
-    if (technology) {
-      setCategoryFilter("all");
-      setQuery(technology.name);
-      setSelected(null);
-      setOpen(true);
-    }
-  }, [restoreTechnology]);
 
   useEffect(() => {
     if (!open) return;
@@ -446,19 +432,6 @@ export default function TechnologyExplorer({
 
   const results = useMemo(() => {
     const trimmedQuery = query.trim();
-    const matchesCategoryFilter = (technology: Technology) => {
-      if (categoryFilter === "frameworks") {
-        return technology.category.toLowerCase() === "frameworks";
-      }
-
-      if (categoryFilter === "platforms") {
-        return ["platforms & tools", "cloud", "backend"].includes(
-          technology.category.toLowerCase()
-        );
-      }
-
-      return true;
-    };
 
     if (!trimmedQuery) {
       const priority = [
@@ -481,7 +454,7 @@ export default function TechnologyExplorer({
         "Allure",
       ];
 
-      return [...TECHNOLOGIES].filter(matchesCategoryFilter).sort((a, b) => {
+      return [...TECHNOLOGIES].sort((a, b) => {
         const aIndex = priority.indexOf(a.name);
         const bIndex = priority.indexOf(b.name);
 
@@ -499,8 +472,7 @@ export default function TechnologyExplorer({
       });
     }
 
-    return TECHNOLOGIES
-      .filter(matchesCategoryFilter)
+    const sorted = TECHNOLOGIES
       .map((technology) => ({
         technology,
         score: scoreTechnology(technology, trimmedQuery),
@@ -513,7 +485,27 @@ export default function TechnologyExplorer({
           a.technology.name.localeCompare(b.technology.name)
       )
       .map(({ technology }) => technology);
-  }, [query, categoryFilter]);
+
+    const normalizedQuery = trimmedQuery.toLowerCase();
+
+    if (normalizedQuery === "framework") {
+      return sorted.filter((technology) =>
+        technology.usage.some((item) =>
+          PORTFOLIO_CATEGORY_PROJECTS.frameworks.has(item.project)
+        )
+      );
+    }
+
+    if (normalizedQuery === "platform") {
+      return sorted.filter((technology) =>
+        technology.usage.some((item) =>
+          PORTFOLIO_CATEGORY_PROJECTS.platforms.has(item.project)
+        )
+      );
+    }
+
+    return sorted;
+  }, [query]);
 
   const categoryCount = useMemo(
     () => new Set(TECHNOLOGIES.map((technology) => technology.category)).size,
@@ -596,7 +588,6 @@ export default function TechnologyExplorer({
                       value={query}
                       onChange={(event) => {
                         setQuery(event.target.value);
-                        setCategoryFilter("all");
                         setSelected(null);
                       }}
                       onKeyDown={(event) => {
@@ -612,7 +603,6 @@ export default function TechnologyExplorer({
                         type="button"
                         onClick={() => {
                           setQuery("");
-                          setCategoryFilter("all");
                           setSelected(null);
                         }}
                         aria-label="Clear technology search"
@@ -623,45 +613,38 @@ export default function TechnologyExplorer({
                     )}
                   </div>
 
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 px-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="mr-1 text-[10px] uppercase tracking-[0.2em] text-zinc-600">
-                        {query ? `${results.length} matches` : "All technologies"}
-                      </p>
+                  <div className="mt-4 flex flex-wrap items-center gap-2 px-1">
+                    {[
+                      { label: "All", value: "" },
+                      { label: "Frameworks", value: "framework" },
+                      { label: "Platforms", value: "platform" },
+                    ].map((filter) => {
+                      const active =
+                        filter.value === ""
+                          ? query === ""
+                          : query.trim().toLowerCase() === filter.value;
 
-                      {[
-                        ["all", "All"],
-                        ["frameworks", "Frameworks"],
-                        ["platforms", "Platforms"],
-                      ].map(([value, label]) => (
+                      return (
                         <button
-                          key={value}
+                          key={filter.label}
                           type="button"
                           onClick={() => {
-                            const nextFilter = value as typeof categoryFilter;
-                            setCategoryFilter(nextFilter);
-                            setQuery(
-                              nextFilter === "frameworks"
-                                ? "framework"
-                                : nextFilter === "platforms"
-                                  ? "platform"
-                                  : ""
-                            );
+                            setQuery(filter.value);
                             setSelected(null);
                           }}
-                          className={`rounded-full border px-2.5 py-1 text-[10px] transition ${
-                            categoryFilter === value
+                          className={`rounded-full border px-3 py-1.5 text-[10px] uppercase tracking-[0.14em] transition ${
+                            active
                               ? "border-cyan-300/20 bg-cyan-300/[0.08] text-cyan-300"
-                              : "border-white/[0.07] bg-white/[0.025] text-zinc-500 hover:border-white/[0.12] hover:bg-white/[0.05] hover:text-zinc-300"
+                              : "border-white/[0.07] bg-white/[0.025] text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-300"
                           }`}
                         >
-                          {label}
+                          {filter.label}
                         </button>
-                      ))}
-                    </div>
+                      );
+                    })}
 
-                    <span className="text-[10px] text-zinc-700">
-                      Select one to explore
+                    <span className="ml-auto hidden text-[10px] text-zinc-700 sm:inline">
+                      {query ? `${results.length} matches` : "All technologies"}
                     </span>
                   </div>
 
@@ -755,7 +738,7 @@ export default function TechnologyExplorer({
                               key={`${selected.name}-${item.project}`}
                               href={item.href}
                               onClick={() => {
-                                onProjectNavigate?.(selected.name);
+                                onProjectNavigate?.();
                                 close();
                               }}
                               className="group block rounded-2xl border border-white/[0.08] bg-white/[0.035] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-300/20 hover:bg-white/[0.06] hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]"
