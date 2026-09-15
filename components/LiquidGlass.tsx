@@ -85,8 +85,8 @@ export default function LiquidGlass({
         group relative overflow-hidden rounded-3xl
         border border-white/[0.10]
         bg-white/[0.035]
-        backdrop-blur-2xl
-        backdrop-saturate-[160%]
+        // backdrop-blur-2xl
+        // backdrop-saturate-[160%]
 
         shadow-[0_20px_80px_rgba(0,0,0,0.22)]
 
