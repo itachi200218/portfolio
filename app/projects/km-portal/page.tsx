@@ -46,13 +46,12 @@ function ScrollReveal({
   return (
     <div
       ref={ref}
-      className={className}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translate3d(0,0,0)" : "translate3d(0,18px,0)",
-        filter: visible ? "blur(0)" : "blur(5px)",
-        transition: `opacity 900ms cubic-bezier(.16,1,.3,1) ${delay}ms, transform 900ms cubic-bezier(.16,1,.3,1) ${delay}ms, filter 900ms cubic-bezier(.16,1,.3,1) ${delay}ms`,
-      }}
+      className={`transition-[transform,opacity,filter] duration-[950ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:blur-0 ${
+        visible
+          ? "translate-y-0 opacity-100 blur-0"
+          : "translate-y-16 opacity-0 blur-[6px]"
+      } ${className}`}
+      style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
     </div>
@@ -76,20 +75,20 @@ function GlassCard({
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-    element.style.setProperty("--mx", `${x}px`);
-    element.style.setProperty("--my", `${y}px`);
-    element.style.setProperty("--rx", `${(0.5 - y / rect.height) * 2.5}deg`);
-    element.style.setProperty("--ry", `${(x / rect.width - 0.5) * 2.5}deg`);
+    element.style.setProperty("--mouse-x", `${x}px`);
+    element.style.setProperty("--mouse-y", `${y}px`);
+    element.style.setProperty("--rotate-x", `${(0.5 - y / rect.height) * 2.5}deg`);
+    element.style.setProperty("--rotate-y", `${(x / rect.width - 0.5) * 2.5}deg`);
   };
 
   const reset = () => {
     const element = ref.current;
     if (!element) return;
 
-    element.style.setProperty("--mx", "50%");
-    element.style.setProperty("--my", "20%");
-    element.style.setProperty("--rx", "0deg");
-    element.style.setProperty("--ry", "0deg");
+    element.style.setProperty("--mouse-x", "50%");
+    element.style.setProperty("--mouse-y", "20%");
+    element.style.setProperty("--rotate-x", "0deg");
+    element.style.setProperty("--rotate-y", "0deg");
   };
 
   return (
@@ -97,25 +96,19 @@ function GlassCard({
       ref={ref}
       onMouseMove={handleMove}
       onMouseLeave={reset}
-      className={`group relative overflow-hidden rounded-[28px] border border-white/[0.10] bg-white/[0.045] shadow-[0_24px_90px_rgba(0,0,0,0.30)] backdrop-blur-2xl backdrop-saturate-150 transition-transform duration-500 ease-out [transform:perspective(1200px)_rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))] ${className}`}
-      style={
-        {
-          "--mx": "50%",
-          "--my": "20%",
-          "--rx": "0deg",
-          "--ry": "0deg",
-        } as React.CSSProperties
-      }
+      className={`group/glass relative overflow-hidden rounded-3xl border border-white/[0.10] bg-white/[0.035] p-6 backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_20px_80px_rgba(0,0,0,0.18)] transition-[transform,border-color,background,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-white/[0.18] hover:bg-white/[0.055] hover:shadow-[0_30px_100px_rgba(0,0,0,0.28)] md:[transform:perspective(1000px)_rotateX(var(--rotate-x))_rotateY(var(--rotate-y))] ${className}`}
+      style={{
+        ["--mouse-x" as string]: "50%",
+        ["--mouse-y" as string]: "50%",
+        ["--rotate-x" as string]: "0deg",
+        ["--rotate-y" as string]: "0deg",
+      }}
     >
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(520px circle at var(--mx) var(--my), rgba(103,232,249,.12), transparent 42%), radial-gradient(500px circle at 90% 10%, rgba(167,139,250,.08), transparent 42%)",
-        }}
-      />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.055] via-transparent to-transparent" />
+      <div className="pointer-events-none absolute inset-0 rounded-3xl bg-[radial-gradient(420px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.11),transparent_58%)] opacity-0 transition-opacity duration-500 group-hover/glass:opacity-100" />
+      <div className="pointer-events-none absolute -left-20 -top-20 h-40 w-40 rounded-full bg-cyan-400/[0.07] blur-3xl transition-transform duration-700 group-hover/glass:translate-x-8 group-hover/glass:translate-y-6" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 h-48 w-48 rounded-full bg-purple-400/[0.06] blur-3xl transition-transform duration-700 group-hover/glass:-translate-x-8 group-hover/glass:-translate-y-6" />
+      <div className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent opacity-0 transition-transform duration-1000 group-hover/glass:translate-x-[320%] group-hover/glass:opacity-100" />
+      <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/[0.04]" />
       <div className="relative">{children}</div>
     </div>
   );
@@ -132,13 +125,14 @@ function SectionHeading({
 }) {
   return (
     <div className="mb-10 max-w-3xl">
-      <div className="mb-3 text-xs font-medium uppercase tracking-[0.28em] text-cyan-300/70">
-        {number}
+      <div className="flex items-center gap-3 text-xs tracking-[0.2em] text-cyan-400">
+        <span>{number}</span>
+        <span className="h-px w-10 bg-cyan-400/30" />
       </div>
-      <h2 className="text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
+      <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">
         {title}
       </h2>
-      <p className="mt-4 text-base leading-7 text-white/50">{description}</p>
+      <p className="mt-4 leading-7 text-zinc-500">{description}</p>
     </div>
   );
 }
@@ -245,16 +239,16 @@ export default function KMPortalCaseStudy() {
       : sectionTabs.find(([, , id]) => id === activeSection)?.[1] ?? "Sections";
 
   return (
-    <main className="min-h-screen overflow-x-clip bg-[#050507] text-white selection:bg-cyan-300/20 selection:text-white">
+    <main className="min-h-screen overflow-x-clip bg-[#02030a] text-white selection:bg-cyan-400/20 selection:text-cyan-100">
       {/* Ambient glass lighting */}
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute left-[5%] top-[4%] h-[420px] w-[420px] rounded-full bg-cyan-400/[0.045] blur-[130px]" />
-        <div className="absolute right-[2%] top-[28%] h-[520px] w-[520px] rounded-full bg-violet-500/[0.04] blur-[150px]" />
-        <div className="absolute bottom-[8%] left-[35%] h-[420px] w-[420px] rounded-full bg-blue-500/[0.025] blur-[140px]" />
+      <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
+        <div className="absolute left-[10%] top-[10%] h-[420px] w-[420px] rounded-full bg-cyan-500/[0.07] blur-[140px]" />
+        <div className="absolute right-[5%] top-[35%] h-[500px] w-[500px] rounded-full bg-purple-500/[0.06] blur-[160px]" />
+        <div className="absolute bottom-[10%] left-[35%] h-[400px] w-[400px] rounded-full bg-blue-500/[0.05] blur-[150px]" />
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-white/[0.07] bg-black/30 backdrop-blur-2xl">
+      <nav className="sticky top-0 z-50 border-b border-white/[0.08] bg-black/35 backdrop-blur-2xl backdrop-saturate-[180%]">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
          <button
   type="button"
@@ -278,7 +272,7 @@ export default function KMPortalCaseStudy() {
       </nav>
 
       {/* SECTION NAVIGATION */}
-      <div className="sticky top-[65px] z-40 border-b border-white/[0.06] bg-black/45 backdrop-blur-2xl backdrop-saturate-[180%]">
+      <div className="sticky top-[65px] z-40 border-b border-white/[0.06] bg-black/25 backdrop-blur-2xl backdrop-saturate-[180%]">
         {/* Desktop: full section tabs */}
         <div className="mx-auto hidden max-w-7xl overflow-x-auto px-4 py-2.5 scrollbar-hide lg:block lg:px-8">
           <div className="flex min-w-max items-center gap-1">
