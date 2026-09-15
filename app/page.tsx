@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
@@ -96,7 +97,14 @@ function ScrollReveal({
 }
 
 export default function Home() {
+  const router = useRouter();
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Prefetch the AllureIQ case-study route on Home page load.
+  // This is a targeted Safari performance test.
+  useEffect(() => {
+    router.prefetch("/projects/allureiq");
+  }, [router]);
 
 useEffect(() => {
   const handleScroll = () => {
@@ -411,158 +419,167 @@ const scrollToTop = () => {
     <span className="text-xs uppercase tracking-[0.25em] text-zinc-600">
       Personal Engineering
     </span>
+
     <div className="h-px flex-1 bg-zinc-900" />
   </div>
 
   <div className="grid gap-6 md:grid-cols-2">
 
-    <Link
-      onClick={rememberHomeScroll}
-      href="/projects/jarvis"
-      className="group block h-full"
-    >
-      <Project
-        number="01"
-        title="J.A.R.V.I.S"
-        eyebrow="Flagship AI Platform"
-        description="Full-stack AI platform combining natural-language commands, persistent memory, real-time collaboration, workspaces, chat, audio/video communication, and centralized administration."
-        tags={[
-          "AI",
-          "Spring Boot",
-          "Java",
-          "MongoDB",
-          "WebSockets",
-          "WebRTC",
-        ]}
-        large
-        featured
-      />
-    </Link>
+    <ScrollReveal>
+      <Link
+        onClick={rememberHomeScroll}
+        href="/projects/jarvis"
+        className="group block h-full"
+      >
+        <Project
+          number="01"
+          title="J.A.R.V.I.S"
+          eyebrow="Flagship AI Platform"
+          description="Full-stack AI platform combining natural-language commands, persistent memory, real-time collaboration, workspaces, chat, audio/video communication, and centralized administration."
+          tags={[
+            "AI",
+            "Spring Boot",
+            "Java",
+            "MongoDB",
+            "WebSockets",
+            "WebRTC",
+          ]}
+          large
+          featured
+        />
+      </Link>
+    </ScrollReveal>
 
-    <Link
-      onClick={rememberHomeScroll}
-      href="/projects/allureiq"
-      className="group block h-full"
-    >
-      <Project
-        number="02"
-        title="AllureIQ"
-        eyebrow="AI Test Intelligence"
-        description="AI-powered unified test intelligence platform combining automated API testing, intelligent failure analysis, root-cause insights, recommendations, persistent reports, and reusable framework capabilities."
-        tags={[
-          "Java",
-          "Spring Boot",
-          "REST Assured",
-          "TestNG",
-          "MongoDB",
-          "AI",
-        ]}
-        large
-      />
-    </Link>
+    <ScrollReveal delay={120}>
+      <Link
+        onClick={rememberHomeScroll}
+        href="/projects/allureiq"
+        className="group block h-full"
+      >
+        <Project
+          number="02"
+          title="AllureIQ"
+          eyebrow="AI Test Intelligence"
+          description="AI-powered unified test intelligence platform combining automated API testing, intelligent failure analysis, root-cause insights, recommendations, persistent reports, and reusable framework capabilities."
+          tags={[
+            "Java",
+            "Spring Boot",
+            "REST Assured",
+            "TestNG",
+            "MongoDB",
+            "AI",
+          ]}
+          large
+        />
+      </Link>
+    </ScrollReveal>
 
-    <Link
-      onClick={rememberHomeScroll}
-      href="/projects/food-finder"
-      className="group block h-full"
-    >
-      <Project
-        number="03"
-        title="Food Finder"
-        eyebrow="AI + Backend Platform"
-        description="AI-enhanced recipe discovery platform using fuzzy search, Redis caching, MySQL persistence, secure authentication, and intelligent AI fallback for fast recipe discovery."
-        tags={[
-          "Python",
-          "Flask",
-          "Spring Boot",
-          "Redis",
-          "MySQL",
-          "Gemini",
-        ]}
-      />
-    </Link>
-
-  </div>
-</div>
-
-{/* Professional */}
-
-<div className="mt-24">
-  <div className="mb-6 flex items-center gap-3">
-    <span className="text-xs uppercase tracking-[0.25em] text-zinc-600">
-      Professional Engineering
-    </span>
-    <div className="h-px flex-1 bg-zinc-900" />
-  </div>
-
-  <div className="grid gap-6 md:grid-cols-2">
-
-    <Link
-      onClick={rememberHomeScroll}
-      href="/projects/sfcc-promotion"
-      className="group block h-full"
-    >
-      <Project
-        number="04"
-        title="SFCC Promotion Validation Platform"
-        eyebrow="Enterprise Engineering"
-        description="Reusable enterprise validation framework and platform for complex promotion scenarios, business-rule execution, automated validation, and reporting across commerce workflows."
-        tags={[
-          "Java",
-          "Spring Boot",
-          "SFCC",
-          "Cucumber",
-          "REST Assured",
-        ]}
-        large
-        featured
-      />
-    </Link>
-
-    <Link
-      onClick={rememberHomeScroll}
-      href="/projects/loggerai"
-      className="group block h-full"
-    >
-      <Project
-        number="05"
-        title="LoggerAI"
-        eyebrow="AI-Powered Framework Diagnostics"
-        description="Java and Spring Boot diagnostic platform that parses framework logs and report data, uses AI to identify likely root causes, explain failures, and generate actionable solutions."
-        tags={[
-          "Java",
-          "Spring Boot",
-          "AI",
-          "Log Parsing",
-          "Root Cause",
-          "Diagnostics",
-        ]}
-      />
-    </Link>
-
-    <Link
-      onClick={rememberHomeScroll}
-      href="/projects/km-portal"
-      className="group block h-full"
-    >
-      <Project
-        number="06"
-        title="KM Portal"
-        eyebrow="Knowledge & Learning Platform"
-        description="Internal knowledge and learning platform supporting structured learning workflows, measurable scoring, user activity tracking, and duplicate-prevention mechanisms."
-        tags={[
-          "Java",
-          "Spring Boot",
-          "Knowledge Management",
-          "Learning",
-          "Scoring",
-          "User Tracking",
-        ]}
-      />
-    </Link>
+    <ScrollReveal delay={240}>
+      <Link
+        onClick={rememberHomeScroll}
+        href="/projects/food-finder"
+        className="group block h-full"
+      >
+        <Project
+          number="03"
+          title="Food Finder"
+          eyebrow="AI + Backend Platform"
+          description="AI-enhanced recipe discovery platform using fuzzy search, Redis caching, MySQL persistence, secure authentication, and intelligent AI fallback for fast recipe discovery."
+          tags={[
+            "Python",
+            "Flask",
+            "Spring Boot",
+            "Redis",
+            "MySQL",
+            "Gemini",
+          ]}
+        />
+      </Link>
+    </ScrollReveal>
 
   </div>
 </div>
+        {/* Professional */}
+        <div className="mt-24">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="text-xs uppercase tracking-[0.25em] text-zinc-600">
+              Professional Engineering
+            </span>
+            <div className="h-px flex-1 bg-zinc-900" />
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <ScrollReveal>
+              <Link
+                onClick={rememberHomeScroll}
+        href="/projects/sfcc-promotion"
+                className="group block h-full"
+              >
+                <Project
+                  number="04"
+                  title="SFCC Promotion Validation Platform"
+                  eyebrow="Enterprise Engineering"
+                  description="Reusable enterprise validation framework and platform for complex promotion scenarios, business-rule execution, automated validation, and reporting across commerce workflows."
+                  tags={[
+                    "Java",
+                    "Spring Boot",
+                    "SFCC",
+                    "Cucumber",
+                    "REST Assured",
+                  ]}
+                  large
+                  featured
+                />
+              </Link>
+            </ScrollReveal>
+
+            <ScrollReveal delay={120}>
+              <Link
+                onClick={rememberHomeScroll}
+        href="/projects/loggerai"
+                className="group block h-full"
+              >
+                <Project
+                  number="05"
+                  title="LoggerAI"
+                  eyebrow="AI-Powered Framework Diagnostics"
+                  description="Java and Spring Boot diagnostic platform that parses framework logs and report data, uses AI to identify likely root causes, explain failures, and generate actionable solutions."
+                  tags={[
+                    "Java",
+                    "Spring Boot",
+                    "AI",
+                    "Log Parsing",
+                    "Root Cause",
+                    "Diagnostics",
+                  ]}
+                />
+              </Link>
+            </ScrollReveal>
+
+            <ScrollReveal delay={240}>
+              <Link
+                onClick={rememberHomeScroll}
+        href="/projects/km-portal"
+                className="group block h-full"
+              >
+                <Project
+                  number="06"
+                  title="KM Portal"
+                  eyebrow="Knowledge & Learning Platform"
+                  description="Internal knowledge and learning platform supporting structured learning workflows, measurable scoring, user activity tracking, and duplicate-prevention mechanisms."
+                  tags={[
+                    "Java",
+                    "Spring Boot",
+                    "Knowledge Management",
+                    "Learning",
+                    "Scoring",
+                    "User Tracking",
+                  ]}
+                />
+              </Link>
+            </ScrollReveal>
+          </div>
+        </div>
       </section>
 
       {/* JARVIS Highlight */}
