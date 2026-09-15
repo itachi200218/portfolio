@@ -132,7 +132,6 @@ function GlassCard({
   const ref = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    // Safari/iPhone: avoid pointer-driven layout reads and style writes.
     if (window.matchMedia("(max-width: 767px)").matches) return;
 
     const element = ref.current;
@@ -355,7 +354,8 @@ export default function AllureIQCaseStudy() {
             </button>
 
             {mobileSectionsOpen && (
-              <div className="absolute left-0 right-0 top-full grid grid-cols-2 gap-2 border-x border-b border-white/[0.08] bg-[#080a12]/95 p-3 shadow-2xl backdrop-blur-2xl">
+              <div className="absolute left-0 right-0 top-full border-x border-b border-white/[0.08] bg-[#080a12]/95 p-3 shadow-2xl backdrop-blur-2xl">
+                <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => scrollToSection("top")}
@@ -384,6 +384,7 @@ export default function AllureIQCaseStudy() {
                     <span className="mt-1 block">{title}</span>
                   </button>
                 ))}
+                </div>
               </div>
             )}
           </div>
