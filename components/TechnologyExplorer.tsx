@@ -570,7 +570,7 @@ export default function TechnologyExplorer({
                       }}
                       placeholder="Search technology or project..."
                       aria-label="Search technologies and projects"
-                      className="w-full rounded-2xl border border-white/10 bg-white/[0.045] py-3 pl-11 pr-4 text-sm text-white outline-none placeholder:text-zinc-600 transition-all duration-300 focus:border-cyan-300/30 focus:bg-white/[0.07] focus:ring-1 focus:ring-cyan-300/10"
+                      className="w-full rounded-2xl border border-white/10 bg-white/[0.045] py-3 pl-11 pr-4 text-base text-white outline-none placeholder:text-zinc-600 transition-all duration-300 focus:border-cyan-300/30 focus:bg-white/[0.07] focus:ring-1 focus:ring-cyan-300/10 sm:text-sm"
                     />
 
                     {query && (
