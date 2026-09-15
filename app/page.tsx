@@ -100,6 +100,7 @@ export default function Home() {
   const router = useRouter();
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [restoreTechnology, setRestoreTechnology] = useState<string | null>(null);
+  const [resumeOpen, setResumeOpen] = useState(false);
 
   // Prefetch the AllureIQ case-study route on Home page load.
   // This is a targeted Safari performance test.
@@ -166,16 +167,93 @@ const scrollToTop = () => {
 };
 
 
+  useEffect(() => {
+    if (!resumeOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setResumeOpen(false);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.removeProperty("overflow");
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [resumeOpen]);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-white selection:text-black">
+      {resumeOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-3 backdrop-blur-md sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Resume PDF"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setResumeOpen(false);
+            }
+          }}
+        >
+          <div className="relative flex h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-white/[0.10] bg-[#080a12]/95 shadow-2xl">
+            <div className="flex h-14 shrink-0 items-center justify-between border-b border-white/[0.08] px-4 sm:px-5">
+              <div className="text-sm font-semibold tracking-tight text-zinc-200">
+                Resume<span className="text-zinc-600">.</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="/Adepu_chaitanya_Software_Engineering%20.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-white/[0.08] px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.14em] text-zinc-400 transition-colors duration-300 hover:bg-white/[0.05] hover:text-white"
+                >
+                  Open
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => setResumeOpen(false)}
+                  aria-label="Close resume"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-lg text-zinc-500 transition-colors duration-300 hover:bg-white/[0.06] hover:text-white"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <iframe
+              src="/Adepu_chaitanya_Software_Engineering%20.pdf#view=FitH"
+              title="Chaitanya Adepu Resume"
+              className="min-h-0 flex-1 w-full bg-white"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Navigation */}
 <nav className="fixed left-1/2 top-4 z-50 w-[calc(100%-2rem)] max-w-5xl xl:max-w-7xl -translate-x-1/2">  <LiquidGlass className="rounded-full px-5 py-3 md:px-6">
     <div className="flex items-center justify-between">
 
-      {/* LOGO */}
-      <div className="text-lg font-semibold tracking-tight">
-        CHAITANYA<span className="text-zinc-500">.</span>
+      {/* LOGO + RESUME */}
+      <div className="flex items-center gap-7">
+        <div className="text-lg font-semibold tracking-tight">
+          CHAITANYA<span className="text-zinc-500">.</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setResumeOpen(true)}
+          aria-label="Open resume PDF"
+          className="text-lg font-semibold tracking-tight text-zinc-400 transition-all duration-300 hover:text-white"
+        >
+          Resume<span className="text-zinc-600">.</span>
+        </button>
       </div>
 
       {/* DESKTOP NAV */}
