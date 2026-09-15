@@ -424,6 +424,22 @@ export default function TechnologyExplorer({
   useEffect(() => {
     if (!restoreTechnology) return;
 
+    if (restoreTechnology.startsWith("__GROUP__:")) {
+      const group = restoreTechnology.replace("__GROUP__:", "") as
+        | "frameworks"
+        | "platforms"
+        | "ai-agent"
+        | "full-stack";
+
+      if (group in PORTFOLIO_PROJECT_GROUPS) {
+        setProjectGroup(group);
+        setQuery("");
+        setSelected(null);
+        setOpen(true);
+        return;
+      }
+    }
+
     const technology = TECHNOLOGIES.find(
       (item) => item.name === restoreTechnology
     );
@@ -686,7 +702,7 @@ export default function TechnologyExplorer({
                             key={item.project}
                             href={item.href}
                             onClick={() => {
-                              onProjectNavigate?.(item.project);
+                              onProjectNavigate?.(`__GROUP__:${projectGroup}`);
                               close();
                             }}
                             className="group block w-full rounded-2xl border border-transparent px-4 py-4 text-left transition-all duration-200 hover:border-cyan-300/20 hover:bg-white/[0.05]"
