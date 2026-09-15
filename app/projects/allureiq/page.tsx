@@ -81,7 +81,7 @@ function ScrollReveal({
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Mobile: render immediately; desktop keeps the original reveal animation.
+    // Keep the reveal animation on desktop only.
     if (window.matchMedia("(max-width: 767px)").matches) {
       setVisible(true);
       return;
@@ -110,8 +110,10 @@ function ScrollReveal({
   return (
     <div
       ref={ref}
-      className={`scroll-reveal-desktop transition-[transform,opacity,filter] duration-[950ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 blur-0 ${
-        visible ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0 blur-[6px]"
+      className={`scroll-reveal-desktop transition-[transform,opacity,filter] duration-[950ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:blur-0 ${
+        visible
+          ? "translate-y-0 opacity-100 blur-0"
+          : "translate-y-16 opacity-0 blur-[6px]"
       } ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -130,7 +132,7 @@ function GlassCard({
   const ref = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    // Touch/mobile devices do not need the desktop pointer-tracking effect.
+    // Safari/iPhone: avoid pointer-driven layout reads and style writes.
     if (window.matchMedia("(max-width: 767px)").matches) return;
 
     const element = ref.current;
@@ -165,7 +167,7 @@ function GlassCard({
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-className={`group/glass relative overflow-hidden rounded-3xl border border-white/[0.10] bg-white/[0.035] p-6 shadow-[0_20px_80px_rgba(0,0,0,0.18)] transition-[transform,border-color,background,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-white/[0.18] hover:bg-white/[0.055] hover:shadow-[0_30px_100px_rgba(0,0,0,0.28)] md:[transform:perspective(1000px)_rotateX(var(--rotate-x))_rotateY(var(--rotate-y))] ${className}`}      style={{
+className={`group/glass relative overflow-hidden rounded-3xl border border-white/[0.10] bg-white/[0.035] p-6 backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_20px_80px_rgba(0,0,0,0.18)] transition-[transform,border-color,background,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-white/[0.18] hover:bg-white/[0.055] hover:shadow-[0_30px_100px_rgba(0,0,0,0.28)] md:[transform:perspective(1000px)_rotateX(var(--rotate-x))_rotateY(var(--rotate-y))] ${className}`}      style={{
         ["--mouse-x" as string]: "50%",
         ["--mouse-y" as string]: "50%",
         ["--rotate-x" as string]: "0deg",
@@ -234,10 +236,6 @@ const mobilePerformanceStyles = `
       opacity: 1 !important;
       filter: none !important;
       transition: none !important;
-    }
-
-    .mobile-disable-atmosphere {
-      display: none !important;
     }
   }
 `;
@@ -308,7 +306,7 @@ export default function AllureIQCaseStudy() {
   return (
     <main className="min-h-screen scroll-smooth overflow-x-clip bg-[#02030a] text-white selection:bg-cyan-400/20 selection:text-cyan-100">
       {/* Background atmosphere */}
-      <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden mobile-disable-atmosphere">
+      <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
         <div className="absolute left-[8%] top-[5%] h-[440px] w-[440px] rounded-full bg-cyan-500/[0.07] blur-[150px]" />
         <div className="absolute right-[3%] top-[30%] h-[520px] w-[520px] rounded-full bg-purple-500/[0.065] blur-[170px]" />
         <div className="absolute bottom-[5%] left-[35%] h-[460px] w-[460px] rounded-full bg-blue-500/[0.05] blur-[160px]" />
@@ -337,7 +335,7 @@ export default function AllureIQCaseStudy() {
       </nav>
 
       {/* Section navigation */}
-      <div className="sticky top-[69px] z-40 border-b border-white/[0.07] bg-black/25 backdrop-blur-2xl backdrop-saturate-[180%]">
+      <div className="sticky top-[69px] z-40 border-b border-white/[0.06] bg-black/25 backdrop-blur-2xl backdrop-saturate-[180%]">
         <div className="mx-auto max-w-7xl px-1 lg:px-6">
           <div className="relative lg:hidden">
             <button
@@ -347,17 +345,17 @@ export default function AllureIQCaseStudy() {
               aria-expanded={mobileSectionsOpen}
               aria-label="Open section navigation"
             >
-              <span className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+              <span className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">
                 Section
               </span>
-              <span className="flex items-center gap-3 text-sm text-zinc-300">
+              <span className="flex items-center gap-3 text-xs text-zinc-300">
                 {sectionTabs.find(([, , id]) => id === activeSection)?.[1] ?? "Overview"}
                 <span className="text-zinc-600">{mobileSectionsOpen ? "−" : "+"}</span>
               </span>
             </button>
 
             {mobileSectionsOpen && (
-              <div className="absolute inset-x-0 top-full grid grid-cols-2 gap-2 border-x border-b border-white/[0.08] bg-[#080910]/95 p-3 shadow-2xl backdrop-blur-2xl">
+              <div className="absolute left-0 right-0 top-full grid grid-cols-2 gap-2 border-x border-b border-white/[0.08] bg-[#080a12]/95 p-3 shadow-2xl backdrop-blur-2xl">
                 <button
                   type="button"
                   onClick={() => scrollToSection("top")}
