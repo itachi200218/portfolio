@@ -400,6 +400,14 @@ export default function TechnologyExplorer({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Technology | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<"all" | "frameworks" | "platforms">("all");
+
+  const close = () => {
+    setOpen(false);
+    setQuery("");
+    setSelected(null);
+    setCategoryFilter("all");
+  };
 
   useEffect(() => {
     if (!restoreTechnology) return;
@@ -409,17 +417,12 @@ export default function TechnologyExplorer({
     );
 
     if (technology) {
+      setCategoryFilter("all");
       setQuery(technology.name);
       setSelected(null);
       setOpen(true);
     }
   }, [restoreTechnology]);
-
-  const close = () => {
-    setOpen(false);
-    setQuery("");
-    setSelected(null);
-  };
 
   useEffect(() => {
     if (!open) return;
@@ -443,6 +446,19 @@ export default function TechnologyExplorer({
 
   const results = useMemo(() => {
     const trimmedQuery = query.trim();
+    const matchesCategoryFilter = (technology: Technology) => {
+      if (categoryFilter === "frameworks") {
+        return technology.category.toLowerCase() === "frameworks";
+      }
+
+      if (categoryFilter === "platforms") {
+        return ["platforms & tools", "cloud", "backend"].includes(
+          technology.category.toLowerCase()
+        );
+      }
+
+      return true;
+    };
 
     if (!trimmedQuery) {
       const priority = [
@@ -465,7 +481,7 @@ export default function TechnologyExplorer({
         "Allure",
       ];
 
-      return [...TECHNOLOGIES].sort((a, b) => {
+      return [...TECHNOLOGIES].filter(matchesCategoryFilter).sort((a, b) => {
         const aIndex = priority.indexOf(a.name);
         const bIndex = priority.indexOf(b.name);
 
@@ -484,6 +500,7 @@ export default function TechnologyExplorer({
     }
 
     return TECHNOLOGIES
+      .filter(matchesCategoryFilter)
       .map((technology) => ({
         technology,
         score: scoreTechnology(technology, trimmedQuery),
@@ -496,7 +513,7 @@ export default function TechnologyExplorer({
           a.technology.name.localeCompare(b.technology.name)
       )
       .map(({ technology }) => technology);
-  }, [query]);
+  }, [query, categoryFilter]);
 
   const categoryCount = useMemo(
     () => new Set(TECHNOLOGIES.map((technology) => technology.category)).size,
@@ -505,7 +522,6 @@ export default function TechnologyExplorer({
 
   const openExplorer = () => {
     setOpen(true);
-
   };
 
   return (
@@ -580,6 +596,7 @@ export default function TechnologyExplorer({
                       value={query}
                       onChange={(event) => {
                         setQuery(event.target.value);
+                        setCategoryFilter("all");
                         setSelected(null);
                       }}
                       onKeyDown={(event) => {
@@ -595,6 +612,7 @@ export default function TechnologyExplorer({
                         type="button"
                         onClick={() => {
                           setQuery("");
+                          setCategoryFilter("all");
                           setSelected(null);
                         }}
                         aria-label="Clear technology search"
@@ -605,10 +623,42 @@ export default function TechnologyExplorer({
                     )}
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between px-1">
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-600">
-                      {query ? `${results.length} matches` : "All technologies"}
-                    </p>
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 px-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="mr-1 text-[10px] uppercase tracking-[0.2em] text-zinc-600">
+                        {query ? `${results.length} matches` : "All technologies"}
+                      </p>
+
+                      {[
+                        ["all", "All"],
+                        ["frameworks", "Frameworks"],
+                        ["platforms", "Platforms"],
+                      ].map(([value, label]) => (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => {
+                            const nextFilter = value as typeof categoryFilter;
+                            setCategoryFilter(nextFilter);
+                            setQuery(
+                              nextFilter === "frameworks"
+                                ? "framework"
+                                : nextFilter === "platforms"
+                                  ? "platform"
+                                  : ""
+                            );
+                            setSelected(null);
+                          }}
+                          className={`rounded-full border px-2.5 py-1 text-[10px] transition ${
+                            categoryFilter === value
+                              ? "border-cyan-300/20 bg-cyan-300/[0.08] text-cyan-300"
+                              : "border-white/[0.07] bg-white/[0.025] text-zinc-500 hover:border-white/[0.12] hover:bg-white/[0.05] hover:text-zinc-300"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
 
                     <span className="text-[10px] text-zinc-700">
                       Select one to explore
