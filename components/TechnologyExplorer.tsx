@@ -489,6 +489,20 @@ export default function TechnologyExplorer({
 
   const openExplorer = () => {
     setOpen(true);
+
+    // Restore the technology explorer state when returning from a case study.
+    // The hash is intentionally local to this component and does not affect
+    // the existing portfolio routes.
+    const hash = window.location.hash;
+    if (hash.startsWith("#technology=")) {
+      const technologyName = decodeURIComponent(hash.slice("#technology=".length));
+      const technology = TECHNOLOGIES.find(
+        (item) => item.name === technologyName
+      );
+      if (technology) {
+        setSelected(technology);
+      }
+    }
   };
 
   return (
@@ -689,6 +703,14 @@ export default function TechnologyExplorer({
                               href={item.href}
                               onClick={() => {
                                 onProjectNavigate?.();
+
+                                // Preserve the exact technology context so
+                                // browser Back can return to this view.
+                                window.history.replaceState(
+                                  null,
+                                  "",
+                                  `${window.location.pathname}${window.location.search}#technology=${encodeURIComponent(selected.name)}`
+                                );
                                 close();
                               }}
                               className="group block rounded-2xl border border-white/[0.08] bg-white/[0.035] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-300/20 hover:bg-white/[0.06] hover:shadow-[0_12px_40px_rgba(0,0,0,0.2)]"
