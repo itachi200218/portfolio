@@ -59,10 +59,10 @@ function ScrollReveal({
           observer.unobserve(element);
         }
       },
-      {
-        threshold: 0.12,
-        rootMargin: "0px 0px -60px 0px",
-      }
+     {
+  threshold: 0,
+  rootMargin: "0px 0px 300px 0px",
+}
     );
 
     observer.observe(element);
