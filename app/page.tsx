@@ -528,12 +528,13 @@ const scrollToTop = () => {
             </p>
           </div>
 
-<h1 className="text-[clamp(2.5rem,6vw,6rem)] font-semibold leading-[0.98] tracking-tight">            Building software,
-            <br />
-            <span className="text-zinc-500">
-              platforms & intelligent systems.
-            </span>
-          </h1>
+<h1 className="text-[clamp(2.25rem,5.2vw,5.5rem)] font-semibold leading-[0.98] tracking-tight">
+  Building software,
+  <br />
+  <span className="text-zinc-500">
+    platforms & intelligent systems.
+  </span>
+</h1>
 
           <p className="mt-8 max-w-3xl text-lg leading-8 text-zinc-400">
             Software engineer focused on backend systems, full-stack
