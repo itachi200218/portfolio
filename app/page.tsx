@@ -519,8 +519,8 @@ const scrollToTop = () => {
 </nav>
 
       {/* Hero */}
-<section className="mx-auto flex min-h-[78vh] max-w-7xl items-center px-6 pt-24 md:pt-0 xl:pt-24">
-      <div className="max-w-5xl">
+<section className="mx-auto flex min-h-[78vh] w-full max-w-7xl items-center px-5 pt-24 sm:px-6 md:pt-0 xl:pt-24">
+  <div className="w-full max-w-5xl">
           <div className="mb-7 flex items-center gap-3">
             <span className="h-2 w-2 rounded-full bg-white" />
             <p className="text-sm font-medium uppercase tracking-[0.3em] text-zinc-500">
@@ -528,8 +528,7 @@ const scrollToTop = () => {
             </p>
           </div>
 
-          <h1 className="text-5xl font-semibold leading-[0.98] tracking-tight sm:text-7xl lg:text-8xl">
-            Building software,
+<h1 className="text-[clamp(2.5rem,6vw,6rem)] font-semibold leading-[0.98] tracking-tight">            Building software,
             <br />
             <span className="text-zinc-500">
               platforms & intelligent systems.
