@@ -286,9 +286,10 @@ body {
 
 }
 /* Narrow desktop / high-DPI laptop adjustment */
-@media (min-width: 580px) and (max-width: 800px) {
+@media (min-width: 650px) and (max-width: 767px) {
   .hero-section {
-    padding-top: 8rem;
+    min-height: 78vh;
+    padding-top: 5rem;
   }
 
   .hero-title {
