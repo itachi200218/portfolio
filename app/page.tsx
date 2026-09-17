@@ -237,6 +237,36 @@ const scrollToTop = () => {
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white selection:bg-white selection:text-black">
       <style>{`
+        /* Target the 150% zoom laptop viewport (~580-800px CSS width)
+           without changing the normal desktop or phone layouts. */
+        @media (min-width: 580px) and (max-width: 800px) {
+          .hero-section {
+            min-height: 72vh;
+            padding-top: 7.5rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+          }
+
+          .hero-title {
+            font-size: clamp(2rem, 5vw, 2.75rem);
+            line-height: 0.98;
+          }
+
+          .hero-section > div {
+            max-width: 42rem;
+          }
+
+          .hero-section p {
+            max-width: 38rem;
+            font-size: 1rem;
+            line-height: 1.7;
+          }
+
+          .hero-section .mt-10 {
+            margin-top: 2rem;
+          }
+        }
+
         @keyframes resumeShine {
           0% { transform: translateX(0); opacity: 0; }
           8% { opacity: 1; }
@@ -519,7 +549,7 @@ const scrollToTop = () => {
 </nav>
 
       {/* Hero */}
-<section className="mx-auto flex min-h-[78vh] w-full max-w-7xl items-center px-5 pt-32 sm:px-6 md:pt-0 xl:pt-24">  <div className="w-full max-w-5xl">
+<section className="hero-section mx-auto flex min-h-[78vh] w-full max-w-7xl items-center px-5 pt-32 sm:px-6 md:pt-0 xl:pt-24">  <div className="w-full max-w-5xl">
           <div className="mb-7 flex items-center gap-3">
             <span className="h-2 w-2 rounded-full bg-white" />
             <p className="text-sm font-medium uppercase tracking-[0.3em] text-zinc-500">
@@ -527,7 +557,7 @@ const scrollToTop = () => {
             </p>
           </div>
 
-<h1 className="text-[clamp(2.5rem,6vw,6rem)] font-semibold leading-[0.98] tracking-tight">            Building software,
+<h1 className="hero-title text-[clamp(2.5rem,6vw,6rem)] font-semibold leading-[0.98] tracking-tight">            Building software,
             <br />
             <span className="text-zinc-500">
               platforms & intelligent systems.

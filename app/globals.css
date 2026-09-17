@@ -283,4 +283,16 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+}
+/* Narrow desktop / high-DPI laptop adjustment */
+@media (min-width: 580px) and (max-width: 800px) {
+  .hero-section {
+    padding-top: 8rem;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    line-height: 0.98;
+  }
 }
