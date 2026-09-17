@@ -286,14 +286,22 @@ body {
 
 }
 /* Narrow desktop / high-DPI laptop adjustment */
-@media (min-width: 650px) and (max-width: 767px) {
+/* Compact laptop viewport */
+@media (min-width: 900px) and (max-width: 1300px) and (max-height: 750px) {
   .hero-section {
-    min-height: 78vh;
+    min-height: auto;
     padding-top: 5rem;
+    padding-bottom: 4rem;
   }
 
   .hero-title {
-    font-size: 3.5rem;
+    font-size: 4.5rem;
     line-height: 0.98;
+  }
+
+  .hero-description {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.6;
   }
 }
