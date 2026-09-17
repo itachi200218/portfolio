@@ -519,8 +519,7 @@ const scrollToTop = () => {
 </nav>
 
       {/* Hero */}
-<section className="mx-auto flex min-h-[78vh] w-full max-w-7xl items-center px-5 pt-24 sm:px-6 md:pt-0 xl:pt-24">
-  <div className="w-full max-w-5xl">
+<section className="mx-auto flex min-h-[78vh] w-full max-w-7xl items-center px-5 pt-32 sm:px-6 md:pt-0 xl:pt-24">  <div className="w-full max-w-5xl">
           <div className="mb-7 flex items-center gap-3">
             <span className="h-2 w-2 rounded-full bg-white" />
             <p className="text-sm font-medium uppercase tracking-[0.3em] text-zinc-500">
