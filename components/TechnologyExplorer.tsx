@@ -649,10 +649,10 @@ export default function TechnologyExplorer({
   onClick={openExplorer}
   aria-haspopup="dialog"
   aria-expanded={open}
-  className="group flex w-full cursor-pointer items-center justify-between rounded-[20px] px-5 py-4 text-[16px] text-zinc-300 transition-colors duration-200 hover:bg-white/[0.08] hover:text-white active:scale-[0.98] xl:inline-flex xl:w-auto xl:justify-start xl:rounded-none xl:px-0 xl:py-0 xl:text-sm xl:text-zinc-400 xl:hover:bg-transparent xl:active:scale-100"
+  className="group flex w-full cursor-pointer items-center justify-between rounded-[20px] px-5 py-4 text-[16px] text-zinc-300 transition-colors duration-200 hover:bg-white/[0.08] hover:text-white active:scale-[0.98] min-[1200px]:inline-flex min-[1200px]:w-auto min-[1200px]:justify-start min-[1200px]:px-5 min-[1200px]:py-3 min-[1200px]:text-sm min-[1200px]:text-zinc-300"
 >
   <span>Technologies</span>
-  <span className="ml-3 text-zinc-500 transition-transform duration-200 group-hover:translate-x-1 xl:hidden">
+  <span className="ml-3 text-zinc-500 transition-transform duration-200 group-hover:translate-x-1">
     →
   </span>
 </button>
