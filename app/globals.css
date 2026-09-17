@@ -287,21 +287,33 @@ body {
 }
 /* Narrow desktop / high-DPI laptop adjustment */
 /* Compact laptop viewport */
-@media (min-width: 900px) and (max-width: 1300px) and (max-height: 750px) {
+/* Compact laptop - high DPI / short viewport */
+/* Compact laptop viewport — e.g. 150% Windows scaling */
+@media (min-width: 1000px) and (max-width: 1300px) and (max-height: 750px) {
   .hero-section {
     min-height: auto;
-    padding-top: 5rem;
+    align-items: flex-start;
+    padding-top: 7rem;
     padding-bottom: 4rem;
   }
 
   .hero-title {
-    font-size: 4.5rem;
+    font-size: 4rem;
     line-height: 0.98;
+    max-width: 1000px;
   }
 
-  .hero-description {
-    margin-top: 1.5rem;
+  .hero-section > div {
+    max-width: 64rem;
+  }
+
+  .hero-section p {
+    max-width: 700px;
     font-size: 1rem;
     line-height: 1.6;
+  }
+
+  .hero-section .mt-10 {
+    margin-top: 2rem;
   }
 }
