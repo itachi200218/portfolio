@@ -375,7 +375,10 @@ export default function KMPortalCaseStudy() {
       </div>
 
       {/* Hero */}
-      <section id="top" className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 pt-28 lg:px-8 lg:pt-36">
+      <section
+  id="top"
+  className="relative scroll-mt-32 mx-auto max-w-7xl px-6 pb-28 pt-28 lg:px-8 xl:pt-36"
+>
         <ScrollReveal>
           <div className="max-w-5xl">
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.04] px-4 py-2 text-xs text-cyan-200/70">

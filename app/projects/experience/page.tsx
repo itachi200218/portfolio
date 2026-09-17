@@ -517,7 +517,7 @@ export default function ProfessionalEngineeringExperience() {
       </div>
 
       <ScrollReveal>
-        <section id="top" className="relative z-10 mx-auto max-w-7xl px-6 pb-24 pt-24 lg:px-10 lg:pt-32">
+        <section id="top" className="relative z-10 mx-auto max-w-7xl px-6 pb-24 pt-24 lg:px-10 xl:pt-32">
           <div className="max-w-5xl">
             <div className="mb-6 flex flex-wrap items-center gap-3">
               <span className="rounded-full border border-cyan-400/20 bg-cyan-400/[0.08] px-3 py-1 text-xs font-medium tracking-wider text-cyan-300">
