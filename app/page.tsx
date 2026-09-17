@@ -362,7 +362,7 @@ const scrollToTop = () => {
       </div>
 
       {/* DESKTOP NAV */}
-      <div className="hidden items-center gap-8 text-sm text-zinc-400 xl:flex">
+      <div className="hidden items-center gap-8 text-sm text-zinc-400 min-[1200px]:flex">
         <TechnologyExplorer
           onProjectNavigate={rememberTechnologySelection}
           restoreTechnology={restoreTechnology}
@@ -400,7 +400,7 @@ const scrollToTop = () => {
       {/* DESKTOP CONTACT */}
       <a
         href="tel:+919010666462"
-        className="hidden rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium text-zinc-300 transition-all duration-300 hover:bg-white/[0.1] hover:text-white xl:block"
+        className="hidden rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium text-zinc-300 transition-all duration-300 hover:bg-white/[0.1] hover:text-white min-[1200px]:block"
       >
         Contact
       </a>
@@ -411,7 +411,7 @@ const scrollToTop = () => {
         aria-label="Toggle navigation"
         aria-expanded={mobileMenuOpen}
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] hover:text-white xl:hidden"
+        className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] hover:text-white min-[1200px]:hidden"
       >
         <span
           className={`absolute h-px w-5 bg-current transition-all duration-300 ${
@@ -442,7 +442,7 @@ const scrollToTop = () => {
 
 {/* MOBILE GLASS MENU */}
 <div
-  className={`absolute left-0 right-0 top-[calc(100%+12px)] z-50 xl:hidden ${
+  className={`absolute left-0 right-0 top-[calc(100%+12px)] z-50 min-[1200px]:hidden ${
     mobileMenuOpen
       ? "pointer-events-auto visible"
       : "pointer-events-none invisible"
